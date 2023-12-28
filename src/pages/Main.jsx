@@ -6,6 +6,9 @@ import appleLogo from "../assets/apple.png";
 import "./Main.css";
 import { Carousel } from "react-bootstrap";
 import Sales from "./Sales";
+import Breadcrumb from "../components/Breadcrumb";
+import Categories from "./Categories";
+import BestSelling from "./BestSelling";
 const Main = () => {
   const slides = [
     {
@@ -43,11 +46,17 @@ const Main = () => {
         "https://cdn.pixabay.com/photo/2021/09/07/07/11/game-console-6603120_640.jpg",
     },
   ];
+  const breadcrumbItems = [
+    { text: "Home", link: "/" },
+    { text: "Category", link: "/category" },
+    { text: "Current Page" },
+  ];
   return (
     <>
       <header>
         <EcomHomePage />
       </header>
+      {/* <Breadcrumb items={breadcrumbItems} /> */}
       <div className="container">
         <div className="row">
           <div className="col-sm-4 main-left">
@@ -116,6 +125,12 @@ const Main = () => {
       <div className="container">
         <div className="row">
           <Sales />
+        </div>
+        <div className="row">
+          <Categories />
+        </div>
+        <div className="row">
+          <BestSelling />
         </div>
       </div>
       <footer>

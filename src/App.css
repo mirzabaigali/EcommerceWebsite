@@ -4,6 +4,11 @@
     box-sizing: border-box;
 }
 
+a {
+    text-decoration: none !important;
+    color: #000000 !important;
+}
+
 body,
 html {
     font-size: 1rem;
@@ -24,5 +29,16 @@ body {
     body,
     html {
         font-size: 1.2rem;
+    }
+}
+
+
+/* Additional media query for smaller screens */
+
+@media (max-width: 767px) {
+    body,
+    html {
+        font-size: 1rem;
+        /* Adjust the value as needed */
     }
 }

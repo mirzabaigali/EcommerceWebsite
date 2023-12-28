@@ -14,9 +14,11 @@ import myOrder from "../assets/My-Oders.svg";
 import cancel from "../assets/icon-cancel.svg";
 import reviews from "../assets/Icon-Reviews.svg";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 const HomeNavbar = () => {
   const [menu, setMenu] = useState(false);
-
+  const [login, setLogin] = useState(true);
+  const navigate = useNavigate();
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 780) {
@@ -99,10 +101,19 @@ const HomeNavbar = () => {
             </div>
             <div className="pages">
               <ul>
-                <li>Home</li>
-                <li>Contact</li>
-                <li>About</li>
-                <li>SignUp</li>
+                <li>
+                  <Link to="/">Home</Link>
+                </li>
+                <li>
+                  <Link to="/contact">Contact</Link>
+                </li>
+
+                <li>
+                  <Link to="/About">About</Link>
+                </li>
+                <li>
+                  <Link to="/signup">SignUp</Link>
+                </li>
               </ul>
             </div>
             <div className="d-flex gap-2">
@@ -123,61 +134,77 @@ const HomeNavbar = () => {
                 </label>
               </div>
               <div className="extraLinks">
-                <img src={wishlist} alt="wishlist" />
-                <img src={cart} alt="cart" />
                 <img
-                  src={user}
-                  alt="user"
-                  className="dropdown-toggle"
-                  id="userDropdown"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
+                  src={wishlist}
+                  alt="wishlist"
+                  onClick={() => navigate("/wishlist")}
+                  style={{ cursor: "pointer" }}
                 />
-                <ul
-                  className="dropdown-menu custom-dropdown"
-                  aria-labelledby="userDropdown"
-                >
-                  <li>
-                    <Link
-                      className="dropdown-item d-flex justify-content-evenly"
-                      to="#"
+                <img
+                  src={cart}
+                  alt="cart"
+                  onClick={() => navigate("/cart")}
+                  style={{ cursor: "pointer" }}
+                />
+                {login ? (
+                  <>
+                    <img
+                      src={user}
+                      alt="user"
+                      className="dropdown-toggle"
+                      id="userDropdown"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    />
+                    <ul
+                      className="dropdown-menu custom-dropdown"
+                      aria-labelledby="userDropdown"
                     >
-                      <img src={userAccount} alt="acc" /> <p>My Account</p>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="dropdown-item d-flex justify-content-evenly"
-                      to="#"
-                    >
-                      <img src={myOrder} alt="acc" /> <p> My Orders</p>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="dropdown-item d-flex justify-content-evenly"
-                      to="#"
-                    >
-                      <img src={cancel} alt="acc" /> <p> My Orders</p>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="dropdown-item d-flex justify-content-evenly"
-                      to="#"
-                    >
-                      <img src={reviews} alt="acc" /> <p>My Reviews</p>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="dropdown-item d-flex justify-content-evenly"
-                      to="#"
-                    >
-                      <img src={logout} alt="acc" /> <p>Logout</p>
-                    </Link>
-                  </li>
-                </ul>
+                      <li>
+                        <Link
+                          className="dropdown-item d-flex justify-content-evenly"
+                          to="#"
+                        >
+                          <img src={userAccount} alt="acc" /> <p>My Account</p>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className="dropdown-item d-flex justify-content-evenly"
+                          to="#"
+                        >
+                          <img src={myOrder} alt="acc" /> <p> My Orders</p>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className="dropdown-item d-flex justify-content-evenly"
+                          to="#"
+                        >
+                          <img src={cancel} alt="acc" /> <p> My Orders</p>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className="dropdown-item d-flex justify-content-evenly"
+                          to="#"
+                        >
+                          <img src={reviews} alt="acc" /> <p>My Reviews</p>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className="dropdown-item d-flex justify-content-evenly"
+                          to="#"
+                        >
+                          <img src={logout} alt="acc" /> <p>Logout</p>
+                        </Link>
+                      </li>
+                    </ul>
+                  </>
+                ) : (
+                  ""
+                )}
                 {/* </div> */}
               </div>
             </div>

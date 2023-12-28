@@ -9,6 +9,7 @@ import saleData from "../saleData";
 
 import "./Sales.css";
 import Button from "../components/Button";
+import Card from "./Card";
 const Sales = () => {
   const itemsPerPage = 4;
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,7 +32,7 @@ const Sales = () => {
   };
   return (
     <>
-      <div className="col-12 sales-wrapper">
+      <div className="col-md-12 sales-wrapper">
         <div className="test d-flex justify-content-between">
           <div className="test1">
             <div className="sale-first">
@@ -86,7 +87,6 @@ const Sales = () => {
         </div>
         <div className="row mt-5">
           {visibleItems.map((item, ind) => {
-            console.log(item);
             const {
               originalPrice,
               itemName,
@@ -96,35 +96,45 @@ const Sales = () => {
               discountPercentage,
             } = item;
             return (
-              <div className="col-lg-3 col-md-6 col-sm-6">
-                <div className="card sale-card" key={ind}>
-                  <div className="discount-box">
-                    <span className="discount-percentage">
-                      -{discountPercentage}%
-                    </span>
-                  </div>
-                  <div className="sale-cardbody">
-                    <img src="" alt="" />
-                    <div className="d-flex flex-column gap-2 align-items-end">
-                      <img src={heart} alt="" className="heart" />
-                      <img src={view} alt="" className="heart" />
-                    </div>
-                  </div>
-                  <div style={{ marginTop: "16px" }}>
-                    <p className="sale-itemName">{itemName}</p>
-                    <div
-                      className="d-flex justify-content-between"
-                      style={{ width: "150px" }}
-                    >
-                      <p className="sale-price">{salePrice}</p>{" "}
-                      <span className="sale-price1 text-decoration-line-through">
-                        {originalPrice}
-                      </span>
-                    </div>
-                    <p className="sale-rating">{ratings}</p>
-                  </div>
-                </div>
-              </div>
+              // <div className="col-lg-3 col-md-6 col-sm-6">
+              //   <div className="card sale-card" key={ind}>
+              //     <div className="discount-box">
+              //       <span className="discount-percentage">
+              //         -{discountPercentage}%
+              //       </span>
+              //     </div>
+              //     <div className="sale-cardbody">
+              //       <img src="" alt="" />
+              //       <div className="d-flex flex-column gap-2 align-items-end">
+              //         <img src={heart} alt="" className="heart" />
+              //         <img src={view} alt="" className="heart" />
+              //       </div>
+              //     </div>
+              //     <div style={{ marginTop: "16px" }}>
+              //       <p className="sale-itemName">{itemName}</p>
+              //       <div
+              //         className="d-flex justify-content-between"
+              //         style={{ width: "150px" }}
+              //       >
+              //         <p className="sale-price">{salePrice}</p>{" "}
+              //         <span className="sale-price1 text-decoration-line-through">
+              //           {originalPrice}
+              //         </span>
+              //       </div>
+              //       <p className="sale-rating">{ratings}</p>
+              //     </div>
+              //   </div>
+              // </div>
+              <>
+                <Card
+                  originalPrice={originalPrice}
+                  itemName={itemName}
+                  ratings={ratings}
+                  salePrice={salePrice}
+                  discountPercentage={discountPercentage}
+                  image={image}
+                />
+              </>
             );
           })}
         </div>
@@ -132,9 +142,7 @@ const Sales = () => {
       <div className="mt-5 mb-5 d-flex justify-content-center">
         <Button label={"View All Products"} className="custom-button" />
       </div>
-      <div className="horizontal-line">
-
-      </div>
+      <div className="horizontal-line"></div>
     </>
   );
 };

@@ -6,6 +6,11 @@ import Button from "../components/Button";
 import GoogleIcon from "../assets/Icon-Google.png";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import Slider from "react-slick";
+import {
+  LazyLoadImage,
+  LazyLoadComponent,
+} from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import image1 from "../assets/HeroImg.jpg";
@@ -17,8 +22,15 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
   const { loginOnly, setLoginOnly } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const sliderSettings = {
+    lazyLoad: true,
     dots: true,
     infinite: true,
     speed: 500,
@@ -35,9 +47,66 @@ const Login = () => {
     e.preventDefault();
     setLoginOnly(true);
   };
+
   const handleLogin = (e) => {
     e.preventDefault();
-    navigate("/MainPage");
+    if (validateLoginForm()) {
+      console.log("Form is valid. Navigating...");
+      navigate("/");
+    } else {
+      console.log("Form is not valid. Navigation aborted.");
+    }
+  };
+  const handleCreateLogin = (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      console.log("Form is valid. Navigating...");
+      setLoginOnly(true)
+    } else {
+      console.log("Form is not valid. Navigation aborted.");
+    }
+  };
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Name cannot be empty";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email cannot be empty";
+    }
+
+    if (!formData.password.trim()) {
+      newErrors.password = "Password cannot be empty";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+  const validateLoginForm = () => {
+    const newErrors = {};
+
+    ["email", "password"].forEach((field) => {
+      if (!formData[field].trim()) {
+        newErrors[field] = `${
+          field.charAt(0).toUpperCase() + field.slice(1)
+        } cannot be empty`;
+      }
+    });
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   return (
@@ -48,7 +117,8 @@ const Login = () => {
           <div className="col-md-7 left">
             <Slider {...sliderSettings} className="slide">
               <div>
-                <img
+                <LazyLoadImage
+                  effect="blur"
                   src={image1}
                   alt="img"
                   className="img-fluid"
@@ -56,15 +126,8 @@ const Login = () => {
                 />
               </div>
               <div>
-                <img
-                  src={image4}
-                  alt="img"
-                  className="img-fluid"
-                  loading="lazy"
-                />
-              </div>
-              <div>
-                <img
+                <LazyLoadImage
+                  effect="blur"
                   src={image2}
                   alt="img"
                   className="img-fluid"
@@ -72,8 +135,18 @@ const Login = () => {
                 />
               </div>
               <div>
-                <img
+                <LazyLoadImage
+                  effect="blur"
                   src={image3}
+                  alt="img"
+                  className="img-fluid"
+                  loading="lazy"
+                />
+              </div>
+              <div>
+                <LazyLoadImage
+                  effect="blur"
+                  src={image4}
                   alt="img"
                   className="img-fluid"
                   loading="lazy"
@@ -92,16 +165,33 @@ const Login = () => {
                   name="email"
                   id="email"
                   placeholder="Email Or Phone Number"
-                  className="input-field-login input2"
+                  // className="input-field-login input2"
+                  className={`input-field-login input2 ${
+                    errors.email && "input-error"
+                  }`}
+                  value={formData.email}
+                  onChange={handleChange}
                 />
+                {errors.email && (
+                  <p className="error-message">{errors.email}</p>
+                )}
+
                 <div className="password-field">
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
                     id="password"
                     placeholder="Password"
-                    className="input-field-login input2"
+                    // className="input-field-login input2"
+                    className={`input-field-login input2 ${
+                      errors.password && "input-error"
+                    }`}
+                    value={formData.password}
+                    onChange={handleChange}
                   />
+                  {errors.password && (
+                    <p className="error-message">{errors.password}</p>
+                  )}
                   <span className="eye">
                     {showPassword ? (
                       <IoIosEyeOff onClick={togglePasswordVisibility} />
@@ -133,24 +223,50 @@ const Login = () => {
                     name="name"
                     id="name"
                     placeholder="Name"
-                    className="input-field-login"
+                    // className="input-field-login"
+                    className={`input-field-login ${
+                      errors.name && "input-error"
+                    }`}
+                    value={formData.name}
+                    onChange={handleChange}
                   />
+                  {errors.name && (
+                    <p className="error-message">{errors.name}</p>
+                  )}
+
                   <br />
                   <input
                     type="email"
                     name="email"
                     id="email"
                     placeholder="Email Or Phone Number"
-                    className="input-field-login input2"
+                    className={`input-field-login input2 ${
+                      errors.email && "input-error"
+                    }`}
+                    value={formData.email}
+                    onChange={handleChange}
                   />
+                  {errors.email && (
+                    <p className="error-message">{errors.email}</p>
+                  )}
+
                   <div className="password-field">
                     <input
                       type={showPassword ? "text" : "password"}
                       name="password"
                       id="password"
                       placeholder="Password"
-                      className="input-field-login input2"
+                      // className="input-field-login input2"
+                      className={`input-field-login input2 ${
+                        errors.password && "input-error"
+                      }`}
+                      value={formData.password}
+                      onChange={handleChange}
                     />
+                    {errors.password && (
+                      <p className="error-message">{errors.password}</p>
+                    )}
+
                     <span className="eye">
                       {showPassword ? (
                         <IoIosEyeOff onClick={togglePasswordVisibility} />
@@ -164,6 +280,7 @@ const Login = () => {
                     <Button
                       label={"Create Account"}
                       className="custom-button"
+                      onClick={handleCreateLogin}
                     />
                   </div>
                   <div className="input2-create">
