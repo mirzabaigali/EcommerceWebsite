@@ -1,0 +1,35 @@
+.NotFound {
+    color: #000;
+    font-family: Inter;
+    font-size: 10vw;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 115px;
+    letter-spacing: 3.3px;
+}
+
+.NotFound-text {
+    color: var(--Text2, #000);
+    font-family: Poppins;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+}
+
+.notfound-button {
+    display: inline-flex;
+    padding: 16px 48px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 4px;
+    background: var(--Button2, #db4444);
+    color: var(--Text, #fafafa);
+    font-family: Poppins;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    border: none;
+}

@@ -1,0 +1,44 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+a {
+    text-decoration: none !important;
+    color: #000000 !important;
+}
+
+body,
+html {
+    font-size: 1rem;
+}
+
+body {
+    font-family: "Georgia", serif !important;
+}
+
+:root {
+    --black-color: #000000;
+    --white-color: #ffffff;
+    --white-secondary-color: #fafafa;
+    --primary-color: #db4444;
+}
+
+@media (min-width: 768px) {
+    body,
+    html {
+        font-size: 1.2rem;
+    }
+}
+
+
+/* Additional media query for smaller screens */
+
+@media (max-width: 767px) {
+    body,
+    html {
+        font-size: 1rem;
+        /* Adjust the value as needed */
+    }
+}
