@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./SignUp.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -6,10 +6,7 @@ import Button from "../components/Button";
 import GoogleIcon from "../assets/Icon-Google.png";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import Slider from "react-slick";
-import {
-  LazyLoadImage,
-  LazyLoadComponent,
-} from "react-lazy-load-image-component";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -17,10 +14,11 @@ import image1 from "../assets/HeroImg.jpg";
 import image2 from "../assets/HeroImage4.jpg";
 import image3 from "../assets/HeroImg3.jpg";
 import image4 from "../assets/ecomImg.jpg";
-import { AuthContext } from "../Context/AppContext";
+import { useAuth } from "../Context/AppContext";
 import { useNavigate } from "react-router-dom";
+import { postData } from "../components/Api";
 const Login = () => {
-  const { loginOnly, setLoginOnly } = useContext(AuthContext);
+  const { token, login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -45,25 +43,45 @@ const Login = () => {
   };
   const handleLoginClick = (e) => {
     e.preventDefault();
-    setLoginOnly(true);
+    login(!token);
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     if (validateLoginForm()) {
-      console.log("Form is valid. Navigating...");
-      navigate("/");
-    } else {
-      console.log("Form is not valid. Navigation aborted.");
+      try {
+        const result = await postData("/login", {
+          email: formData.email,
+          password: formData.password,
+        });
+        console.log(result);
+        const { token } = result;
+        login(token);
+        localStorage.setItem("authToken", token);
+        navigate("/");
+      } catch (error) {
+        console.error("Error login:", error);
+      }
     }
   };
-  const handleCreateLogin = (e) => {
+
+  const handleCreateLogin = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log("Form is valid. Navigating...");
-      setLoginOnly(true)
-    } else {
-      console.log("Form is not valid. Navigation aborted.");
+      try {
+        const result = await postData("/signup", {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        });
+        console.log(result);
+        const { token } = result;
+        login(token);
+        localStorage.setItem("authToken", token);
+        navigate("/");
+      } catch (error) {
+        console.error("Error signing up:", error);
+      }
     }
   };
   const validateForm = () => {
@@ -108,6 +126,9 @@ const Login = () => {
       [name]: value,
     }));
   };
+  useEffect(() => {
+    login(!!token);
+  }, [token, login]);
 
   return (
     <div className="login-wrapper">
@@ -155,8 +176,7 @@ const Login = () => {
             </Slider>
           </div>
           <div className="col-md-5 d-flex justify-content-center align-items-center">
-            {loginOnly ? (
-              // Render only email and password fields
+            {token ? (
               <form action="" className="form-box">
                 <h3 className="text1">Log in to Exclusive</h3>
                 <h6 className="text2">Enter your details below</h6>
@@ -165,7 +185,6 @@ const Login = () => {
                   name="email"
                   id="email"
                   placeholder="Email Or Phone Number"
-                  // className="input-field-login input2"
                   className={`input-field-login input2 ${
                     errors.email && "input-error"
                   }`}
@@ -182,7 +201,6 @@ const Login = () => {
                     name="password"
                     id="password"
                     placeholder="Password"
-                    // className="input-field-login input2"
                     className={`input-field-login input2 ${
                       errors.password && "input-error"
                     }`}
@@ -223,7 +241,6 @@ const Login = () => {
                     name="name"
                     id="name"
                     placeholder="Name"
-                    // className="input-field-login"
                     className={`input-field-login ${
                       errors.name && "input-error"
                     }`}
@@ -256,7 +273,6 @@ const Login = () => {
                       name="password"
                       id="password"
                       placeholder="Password"
-                      // className="input-field-login input2"
                       className={`input-field-login input2 ${
                         errors.password && "input-error"
                       }`}

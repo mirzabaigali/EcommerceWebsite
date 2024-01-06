@@ -9,15 +9,16 @@ import wishlist from "../assets/Wishlist.svg";
 import cart from "../assets/Cart1.svg";
 import user from "../assets/user.svg";
 import userAccount from "../assets/userAccount.svg";
-import logout from "../assets/Icon-logout.svg";
+import logoutimg from "../assets/Icon-logout.svg";
 import myOrder from "../assets/My-Oders.svg";
 import cancel from "../assets/icon-cancel.svg";
 import reviews from "../assets/Icon-Reviews.svg";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../Context/AppContext";
 const HomeNavbar = () => {
   const [menu, setMenu] = useState(false);
-  const [login, setLogin] = useState(true);
+  const { token } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
     const handleResize = () => {
@@ -38,7 +39,15 @@ const HomeNavbar = () => {
   const handleMenu = () => {
     setMenu(!menu);
   };
-
+  const handleLogout = () => {
+    console.log("Logout button clicked");
+    localStorage.removeItem("authToken");
+    navigate("/SignUp");
+    window.location.reload();
+  };
+  useEffect(() => {
+    console.log("Token:", token);
+  }, [token]);
   return (
     <>
       <Sale />
@@ -111,9 +120,11 @@ const HomeNavbar = () => {
                 <li>
                   <Link to="/About">About</Link>
                 </li>
-                <li>
-                  <Link to="/signup">SignUp</Link>
-                </li>
+                {!token && (
+                  <li>
+                    <Link to="/signup">SignUp</Link>
+                  </li>
+                )}
               </ul>
             </div>
             <div className="d-flex gap-2">
@@ -146,7 +157,7 @@ const HomeNavbar = () => {
                   onClick={() => navigate("/cart")}
                   style={{ cursor: "pointer" }}
                 />
-                {login ? (
+                {token ? (
                   <>
                     <img
                       src={user}
@@ -192,12 +203,12 @@ const HomeNavbar = () => {
                           <img src={reviews} alt="acc" /> <p>My Reviews</p>
                         </Link>
                       </li>
-                      <li>
+                      <li onClick={handleLogout}>
                         <Link
                           className="dropdown-item d-flex justify-content-evenly"
                           to="#"
                         >
-                          <img src={logout} alt="acc" /> <p>Logout</p>
+                          <img src={logoutimg} alt="acc" /> <p>Logout</p>
                         </Link>
                       </li>
                     </ul>

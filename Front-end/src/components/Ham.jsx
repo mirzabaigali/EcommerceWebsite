@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
 import "./Ham.css";
 import searchIcon from "../assets/Search.svg";
-import { AuthContext } from "../Context/AppContext";
+// import { AuthContext } from "../Context/AppContext";
 
 const Ham = () => {
-  const { setLoginOnly } = useContext(AuthContext);
+  // const { setLoginOnly } = useContext(AuthContext);
 
   return (
     <div className="container">
@@ -15,7 +15,8 @@ const Ham = () => {
               <li>Home</li>
               <li>Contact</li>
               <li>About</li>
-              <li onClick={() => setLoginOnly(false)}>SignUp</li>
+              {/* <li onClick={() => setLoginOnly(false)}>SignUp</li> */}
+              <li>SignUp</li>
             </ul>
             <div className="row d-flex justify-content-around">
               <div className="col-12 ham-input">

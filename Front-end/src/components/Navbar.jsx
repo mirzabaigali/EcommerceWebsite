@@ -4,12 +4,12 @@ import Sale from "./Sale";
 import searchIcon from "../assets/Search.svg";
 import { GiHamburgerMenu } from "react-icons/gi";
 import Ham from "./Ham";
-import { AuthContext } from "../Context/AppContext";
+// import { AuthContext } from "../Context/AppContext";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [menu, setMenu] = useState(false);
-  const { setLoginOnly } = useContext(AuthContext);
+  // const { setLoginOnly } = useContext(AuthContext);
 
   useEffect(() => {
     const handleResize = () => {
@@ -51,7 +51,8 @@ const Navbar = () => {
                 <li>
                   <Link to="/about">About</Link>
                 </li>
-                <li onClick={() => setLoginOnly(false)}>SignUp</li>
+                <li>SignUp</li>
+                {/* <li onClick={() => setLoginOnly(false)}>SignUp</li> */}
               </ul>
             </div>
             <div className="search">
