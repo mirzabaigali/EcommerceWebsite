@@ -1,25 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import line from "../assets/Rectangleline.svg";
 import left from "../assets/icons_arrow-left.svg";
 import right from "../assets/icons arrow-right.svg";
 import ellipse from "../assets/Ellipse 16.svg";
-import heart from "../assets/heart small.svg";
-import view from "../assets/view.svg";
-import saleData from "../saleData";
-
-import "./Sales.css";
+import fillstar from "../assets/fillstar.svg";
+import emptystar from "../assets/emptystar.svg";
 import Button from "../components/Button";
 import Card from "./Card";
+import { useNavigate } from "react-router-dom";
+import "./Sales.css";
+import axios from "axios";
+import Loader from "../components/Loader";
 const Sales = () => {
   const itemsPerPage = 4;
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [response, setResponse] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
 
-  const visibleItems = saleData.slice(startIndex, endIndex);
+  const visibleItems = response.slice(startIndex, endIndex);
 
-  const totalPages = Math.ceil(saleData.length / itemsPerPage);
+  const totalPages = Math.ceil(response.length / itemsPerPage);
 
   const handleNextPage = () => {
     setCurrentPage((prevPage) =>
@@ -30,6 +33,23 @@ const Sales = () => {
   const handlePrevPage = () => {
     setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
   };
+  const handleClick = () => {
+    navigate("/allproducts");
+  };
+  useEffect(() => {
+    const saleData = async () => {
+      try {
+        const sale = await axios.get("https://fakestoreapi.com/products");
+        setResponse(sale.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    saleData();
+  }, []);
+
   return (
     <>
       <div className="col-md-12 sales-wrapper">
@@ -86,51 +106,35 @@ const Sales = () => {
           </div>
         </div>
         <div className="row mt-5">
-          {visibleItems.map((item, ind) => {
+          {loading && <Loader />}
+
+          {visibleItems.map((item) => {
             const {
-              originalPrice,
-              itemName,
+              id,
+              title,
               image,
-              ratings,
-              salePrice,
-              discountPercentage,
+              rating: { rate },
+              price,
             } = item;
+            const discountPercentage = Math.floor(
+              Math.random() * (25 - 10 + 1) + 10
+            );
+
+            // Calculate sale price
+            const originalPrice = price;
+            const salePrice =
+              originalPrice - (originalPrice * discountPercentage) / 100;
+            //ratings
+            const roundedRating = Math.round(parseFloat(rate));
+
             return (
-              // <div className="col-lg-3 col-md-6 col-sm-6">
-              //   <div className="card sale-card" key={ind}>
-              //     <div className="discount-box">
-              //       <span className="discount-percentage">
-              //         -{discountPercentage}%
-              //       </span>
-              //     </div>
-              //     <div className="sale-cardbody">
-              //       <img src="" alt="" />
-              //       <div className="d-flex flex-column gap-2 align-items-end">
-              //         <img src={heart} alt="" className="heart" />
-              //         <img src={view} alt="" className="heart" />
-              //       </div>
-              //     </div>
-              //     <div style={{ marginTop: "16px" }}>
-              //       <p className="sale-itemName">{itemName}</p>
-              //       <div
-              //         className="d-flex justify-content-between"
-              //         style={{ width: "150px" }}
-              //       >
-              //         <p className="sale-price">{salePrice}</p>{" "}
-              //         <span className="sale-price1 text-decoration-line-through">
-              //           {originalPrice}
-              //         </span>
-              //       </div>
-              //       <p className="sale-rating">{ratings}</p>
-              //     </div>
-              //   </div>
-              // </div>
               <>
                 <Card
-                  originalPrice={originalPrice}
-                  itemName={itemName}
-                  ratings={ratings}
-                  salePrice={salePrice}
+                  ind={id}
+                  originalPrice={price}
+                  itemName={title.substring(0, 20)}
+                  ratings={roundedRating}
+                  salePrice={salePrice.toFixed(2)}
                   discountPercentage={discountPercentage}
                   image={image}
                 />
@@ -140,7 +144,11 @@ const Sales = () => {
         </div>
       </div>
       <div className="mt-5 mb-5 d-flex justify-content-center">
-        <Button label={"View All Products"} className="custom-button" />
+        <Button
+          label={"View All Products"}
+          className="custom-button"
+          onClick={handleClick}
+        />
       </div>
       <div className="horizontal-line"></div>
     </>

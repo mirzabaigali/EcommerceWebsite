@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import EcomHomePage from "../pages/EcomHomePage";
 import Footer from "../components/Footer";
 import DropDown from "../assets/DropDown1.svg";
@@ -51,6 +51,9 @@ const Main = () => {
     { text: "Category", link: "/category" },
     { text: "Current Page" },
   ];
+  useEffect(() => {
+    // window.scrollTo(0, 0);
+  }, []);
   return (
     <>
       <header>

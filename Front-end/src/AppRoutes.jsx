@@ -11,17 +11,10 @@ import Checkout from "./pages/Checkout";
 import Account from "./pages/Account";
 import SingleProductPage from "./pages/SingleProduct";
 import { useAuth } from "./Context/AppContext";
+import AllProducts from "./pages/AllProducts";
 
 const AppRoutes = () => {
   const { token } = useAuth();
-
-  const PrivateRoute = ({ element, ...props }) => {
-    return token ? (
-      <Route {...props} element={element} />
-    ) : (
-      <Navigate to="/signup" />
-    );
-  };
 
   return (
     <Routes>
@@ -29,11 +22,12 @@ const AppRoutes = () => {
       <Route path="/signup" element={<SignUp />} />
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
-      <PrivateRoute path="/wishlist" element={<Wishlist />} />
-      <PrivateRoute path="/cart" element={<Cart />} />
-      <PrivateRoute path="/checkout" element={<Checkout />} />
-      <PrivateRoute path="/account" element={<Account />} />
-      <PrivateRoute path="/product" element={<SingleProductPage />} />
+      <Route path="/wishlist" element={<Wishlist />} />
+      <Route path="/cart" element={<Cart />} />
+      <Route path="/checkout" element={<Checkout />} />
+      <Route path="/account" element={<Account />} />
+      <Route path="/product" element={<SingleProductPage />} />
+      <Route path="/allproducts" element={<AllProducts />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

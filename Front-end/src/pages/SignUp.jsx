@@ -10,16 +10,19 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import image1 from "../assets/HeroImg.jpg";
-import image2 from "../assets/HeroImage4.jpg";
-import image3 from "../assets/HeroImg3.jpg";
-import image4 from "../assets/ecomImg.jpg";
+import image1 from "../assets/signup images/image1.jpg";
+import image2 from "../assets/signup images/image2.jpg";
+import image3 from "../assets/signup images/image3.jpg";
+import image4 from "../assets/signup images/image4.jpg";
+import image5 from "../assets/signup images/image5.jpg";
 import { useAuth } from "../Context/AppContext";
 import { useNavigate } from "react-router-dom";
 import { postData } from "../components/Api";
+import Loader2 from "../components/Loader2";
 const Login = () => {
   const { token, login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -31,7 +34,7 @@ const Login = () => {
     lazyLoad: true,
     dots: true,
     infinite: true,
-    speed: 500,
+    speed: 4000,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
@@ -50,6 +53,7 @@ const Login = () => {
     e.preventDefault();
     if (validateLoginForm()) {
       try {
+        setLoading(true);
         const result = await postData("/login", {
           email: formData.email,
           password: formData.password,
@@ -61,14 +65,16 @@ const Login = () => {
         navigate("/");
       } catch (error) {
         console.error("Error login:", error);
+      } finally {
+        setLoading(false);
       }
     }
   };
-
   const handleCreateLogin = async (e) => {
     e.preventDefault();
     if (validateForm()) {
       try {
+        setLoading(true);
         const result = await postData("/signup", {
           name: formData.name,
           email: formData.email,
@@ -81,6 +87,8 @@ const Login = () => {
         navigate("/");
       } catch (error) {
         console.error("Error signing up:", error);
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -173,6 +181,15 @@ const Login = () => {
                   loading="lazy"
                 />
               </div>
+              <div>
+                <LazyLoadImage
+                  effect="blur"
+                  src={image5}
+                  alt="img"
+                  className="img-fluid"
+                  loading="lazy"
+                />
+              </div>
             </Slider>
           </div>
           <div className="col-md-5 d-flex justify-content-center align-items-center">
@@ -221,9 +238,10 @@ const Login = () => {
                 <div className="input3-create">
                   <div>
                     <Button
-                      label={"Login"}
+                      label={loading ? <Loader2 /> : "Login"}
                       className="custom-button2"
                       onClick={handleLogin}
+                      disabled={loading}
                     />
                   </div>
                   <div className="mt-5 forget">
@@ -294,9 +312,10 @@ const Login = () => {
 
                   <div className="input2">
                     <Button
-                      label={"Create Account"}
+                      label={loading ? <Loader2 /> : "Create Account"}
                       className="custom-button"
                       onClick={handleCreateLogin}
+                      disabled={loading}
                     />
                   </div>
                   <div className="input2-create">
