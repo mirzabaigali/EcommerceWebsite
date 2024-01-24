@@ -19,6 +19,7 @@
   height: 150px;
   object-fit: 100%;
   border-radius: 8px;
+  cursor: pointer;
 }
 
 .product-details {
@@ -81,5 +82,6 @@
   .product-image {
     object-fit: 100%;
     /* background-position: 100%; */
+    cursor: pointer !important;
   }
 }

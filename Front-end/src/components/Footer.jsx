@@ -67,16 +67,40 @@ const Footer = () => {
             <div className="row mt-2 ">
               <div className="col-12 d-flex justify-content-between">
                 <div>
-                  <img src={Facebook} alt="fb" />
+                  <a
+                    href="https://www.facebook.com"
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <img src={Facebook} alt="fb" />
+                  </a>
                 </div>
                 <div>
-                  <img src={Twitter} alt="twi" />
+                  <a
+                    href="https://www.twitter.com"
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <img src={Twitter} alt="twi" />
+                  </a>
                 </div>
                 <div>
-                  <img src={Group1} alt="ins" />
+                  <a
+                    href="https://www.instagram.com"
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <img src={Group1} alt="ins" />
+                  </a>
                 </div>
                 <div>
-                  <img src={Linkedin} alt="link" />
+                  <a
+                    href="https://in.linkedin.com"
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <img src={Linkedin} alt="link" />
+                  </a>
                 </div>
               </div>
             </div>

@@ -11,7 +11,7 @@ import van from "../assets/icon-delivery.svg";
 import reverse from "../assets/Icon-return.svg";
 import Button from "../components/Button";
 import line from "../assets/Rectangleline.svg";
-
+import { useLocation } from "react-router-dom";
 import "./SingleProduct.css";
 
 const SingleProduct = () => {
@@ -72,6 +72,14 @@ const SingleProduct = () => {
   ];
 
   const [items, setItems] = useState(Relateditems);
+  const location = useLocation();
+  const productData = location.state.productData;
+  console.log(productData);
+  const discountPercentage = Math.floor(Math.random() * (25 - 10 + 1) + 10);
+
+  // Calculate sale price
+  const originalPrice = productData.price;
+  const salePrice = originalPrice - (originalPrice * discountPercentage) / 100;
 
   return (
     <>
@@ -84,25 +92,29 @@ const SingleProduct = () => {
           <div className="row mt-4">
             <div className="col-md-7 d-flex gap-1 ">
               <div className="thumbnail-images mt-5 d-flex flex-column">
-                {items.map((item) => (
-                  <img
-                    key={item.id}
-                    src={item.image}
-                    alt={item.itemName}
-                    className="thumbnail"
-                  />
-                ))}
+                {productData &&
+                  Array.isArray(productData.images) &&
+                  productData.images.length > 0 &&
+                  productData.images.map((item) => (
+                    <img
+                      key={item.id}
+                      src={item}
+                      alt={item.itemName}
+                      className="thumbnail"
+                    />
+                  ))}
               </div>
               <div className="main-product-image">
                 <img
-                  src="https://via.placeholder.com/500x500.png?text=Placeholder+Image"
+                  // src="https://via.placeholder.com/500x500.png?text=Placeholder+Image"
+                  src={productData.image || productData.thumbnail}
                   alt="Main Product"
                   className="main-img"
                 />
               </div>
             </div>
             <div className="col-md-5 d-sm-flex flex-sm-column justify-content-sm-center d-md-block">
-              <p className="product-name">Havic HV G-92 Gamepad</p>
+              <p className="product-name">{productData.title}</p>
               <div className="d-flex justify-content-start align-items-baseline">
                 <img src={fillstar} alt="" />
                 <img src={fillstar} alt="" />
@@ -113,12 +125,8 @@ const SingleProduct = () => {
                 <div className="divider ms-3"></div>
                 <p className="stock ms-2">In Stock</p>
               </div>
-              <p className="price">$192.00</p>
-              <p className="describtion">
-                PlayStation 5 Controller Skin High quality vinyl with air
-                channel adhesive for easy bubble free install & mess free
-                removal Pressure sensitive.
-              </p>
+              <p className="price">${salePrice.toFixed(2)}</p>
+              <p className="describtion">{productData.description}</p>
               <div className="divider1"></div>
               <div className="d-lg-flex  mt-3">
                 <p className="me-3">Size:</p>

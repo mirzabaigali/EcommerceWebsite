@@ -33,7 +33,8 @@
 }
 
 .time-block {
-  gap: 50px;
+  gap: 30px;
+  margin-left: 15px;
 }
 
 .divider {
@@ -171,4 +172,15 @@
   opacity: 0.5 !important;
   background: #000;
   /* margin-bottom: 80px; */
+}
+.sale-imgs {
+  max-width: 100%;
+  width: 250px !important;
+  height: 250px !important;
+}
+.img-block{
+  cursor: pointer !important;
+}
+@media screen {
+  
 }

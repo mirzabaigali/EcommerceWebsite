@@ -26,7 +26,7 @@ const AppRoutes = () => {
       <Route path="/cart" element={<Cart />} />
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/account" element={<Account />} />
-      <Route path="/product" element={<SingleProductPage />} />
+      <Route path="/product/:id" element={<SingleProductPage />} />
       <Route path="/allproducts" element={<AllProducts />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
