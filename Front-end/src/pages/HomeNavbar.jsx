@@ -16,8 +16,11 @@ import reviews from "../assets/Icon-Reviews.svg";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AppContext";
+import { useSelector } from "react-redux";
 const HomeNavbar = () => {
   const [menu, setMenu] = useState(false);
+  const [cartItemCount, setCartItemCount] = useState(0);
+  const cartItems = useSelector((state) => state.cart);
   const { token } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
@@ -35,6 +38,12 @@ const HomeNavbar = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+  useEffect(() => {
+    // Calculate the total count of items in the cart
+    const totalCount = cartItems;
+    console.log(totalCount.length);
+    setCartItemCount(totalCount.length);
+  }, [cartItems]);
 
   const handleMenu = () => {
     setMenu(!menu);
@@ -157,6 +166,9 @@ const HomeNavbar = () => {
                   onClick={() => navigate("/cart")}
                   style={{ cursor: "pointer" }}
                 />
+                {cartItemCount > 0 && (
+                  <span className="badge bg-secondary badge-number rounded-pill">{cartItemCount}</span>
+                )}
                 {token ? (
                   <>
                     <img

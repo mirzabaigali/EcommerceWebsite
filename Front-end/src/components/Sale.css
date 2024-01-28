@@ -22,6 +22,7 @@
   font-weight: 600;
   line-height: 24px;
   text-decoration-line: underline;
+  cursor: pointer;
 }
 .dropdown {
   color: var(--white-color);
@@ -31,4 +32,19 @@
   font-weight: 400;
   line-height: 21px;
   padding-top: 18px;
+}
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.blink-animation {
+  animation: blink 1s infinite;
 }

@@ -5,17 +5,20 @@ import { Link } from "react-router-dom";
 import Footer from "../components/Footer";
 import Button from "../components/Button";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { removeFromCart } from "../redux/reducers/cartSlice";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 const Cart = () => {
   const breadcrumbItems = [{ text: "Home", link: "/" }, { text: "Cart" }];
   const [items, setItems] = useState([]);
   const [quantities, setQuantities] = useState({});
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
-  console.log(cart);
   // Update local state when cart changes
   useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
     setItems(cart);
   }, [cart]);
 
@@ -23,9 +26,22 @@ const Cart = () => {
     const quantity = quantities[index] || 1;
     return total + quantity * item.discountPercentage;
   }, 0);
-  console.log(subtotal);
   const shippingCost = 20;
+  const handleRemoveItem = (index) => {
+    // Dispatch an action to remove the item from the cart
+    dispatch(removeFromCart(index));
 
+    // Update the local state accordingly (remove the item from 'items' and 'quantities')
+    const updatedItems = [...items];
+    updatedItems.splice(index, 1);
+
+    const updatedQuantities = { ...quantities };
+    delete updatedQuantities[index];
+
+    setItems(updatedItems);
+    setQuantities(updatedQuantities);
+  };
+  console.log(items);
   return (
     <>
       <header>
@@ -47,10 +63,13 @@ const Cart = () => {
                     <th scope="col">Price</th>
                     <th scope="col">Quantity</th>
                     <th scope="col">Subtotal</th>
+                    <th scope="col">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {items.map((item, index) => (
+                    // console.log(`Item ${index}:`, item);
+                  
                     <tr key={index}>
                       <th scope="row">
                         {index + 1} {item.title}
@@ -63,17 +82,40 @@ const Cart = () => {
                           id={`quantity-${index}`}
                           className="input-field cart-inp"
                           min={0}
+                          max={10}
                           value={quantities[index] || 1}
                           onChange={(e) => {
-                            setQuantities({
-                              ...quantities,
-                              [index]: parseInt(e.target.value, 10) || 0,
-                            });
+                            const newValue = parseInt(e.target.value, 10) || 1;
+                            // Check if the new value is greater than 10
+                            if (newValue > 10) {
+                              setQuantities({
+                                ...quantities,
+                                [index]: 10,
+                              });
+                            } else {
+                              // If within the valid range, update the state with the new value
+                              setQuantities({
+                                ...quantities,
+                                [index]: newValue,
+                              });
+                            }
                           }}
                         />
                       </td>
                       <td>
-                        ${((quantities[index] || 1) * item.discountPercentage).toFixed(2)}
+                        $
+                        {(
+                          (quantities[index] || 1) * item.discountPercentage
+                        ).toFixed(2)}
+                      </td>
+                      <td>
+                        <span
+                          className="delete-icon"
+                          onClick={() => handleRemoveItem(item.id)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <RiDeleteBin6Line />
+                        </span>
                       </td>
                     </tr>
                   ))}

@@ -1,18 +1,20 @@
+// AllProducts.js
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import Loader from "../components/Loader";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { addToCart } from "../redux/reducers/cartSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart, removeFromCart } from "../redux/reducers/cartSlice";
 import "./AllProducts.css";
 import Footer from "../components/Footer";
 import EcomHomePage from "./EcomHomePage";
+import Loader from "../components/Loader";
+import { useNavigate } from "react-router-dom";
+
 const AllProducts = () => {
   const [products, setProducts] = useState([]);
-  const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const cartItems = useSelector((state) => state.cart);
 
   useEffect(() => {
     const fetchAllProducts = async () => {
@@ -24,47 +26,38 @@ const AllProducts = () => {
       } catch (error) {
         console.log(error);
       } finally {
-        // Set loading state to false when data is fetched, regardless of success or error
         setLoading(false);
       }
     };
 
     fetchAllProducts();
-    window.scrollTo(0, 0);
-    // const storedCartItems = JSON.parse(localStorage.getItem("cart")) || [];
-    // setCartItems(storedCartItems);
-    // localStorage.setItem("cart", JSON.stringify(cartItems));
+  }, []);
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+    console.log("Updated Cart in Local Storage:", cartItems);
   }, [cartItems]);
-
-  const navigateToSingleProduct = (item) => {
-    navigate(`/Product/${item.id}`, { state: { productData: item } });
-  };
 
   const handleAddToCart = (product) => {
     const isInCart = cartItems.some((item) => item.id === product.id);
 
     if (isInCart) {
-      // If product is already in the cart, remove it
-      const updatedCart = cartItems.filter((item) => item.id !== product.id);
-      setCartItems(updatedCart);
-      // dispatch(removeFromCart(product.id)); // Assuming you have a removeFromCart action in your redux slice
+      dispatch(removeFromCart(product.id));
     } else {
-      // If product is not in the cart, add it
-      const updatedCart = [...cartItems, product];
-      setCartItems(updatedCart);
       dispatch(addToCart(product));
     }
+  };
+  const navigateToSingleProduct = (item) => {
+    navigate(`/Product/${item.id}`, { state: { productData: item } });
   };
   return (
     <div className="container-fluid">
       <header>
         <EcomHomePage />
       </header>
-      {loading && (
-        <div className="loading d-flex justify-content-center align-items-center">
-          <Loader />
-        </div>
-      )}
+      <div className="d-flex justify-content-center">
+        {loading && <Loader />}
+      </div>
+
       <div className="row">
         {products.map((product) => (
           <div

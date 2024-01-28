@@ -12,6 +12,8 @@ import reverse from "../assets/Icon-return.svg";
 import Button from "../components/Button";
 import line from "../assets/Rectangleline.svg";
 import { useLocation } from "react-router-dom";
+import { addToCart } from "../redux/reducers/cartSlice";
+import { useDispatch } from "react-redux";
 import "./SingleProduct.css";
 
 const SingleProduct = () => {
@@ -21,7 +23,15 @@ const SingleProduct = () => {
   ];
   const sizes = ["XS", "S", "M", "L", "XL"];
   const [quantity, setQuantity] = useState(1);
-
+  const dispatch = useDispatch();
+  const handleBuyNow = () => {
+    // Dispatch the addToCart action with the selected product and quantity
+    dispatch(addToCart({ product: productData, quantity }));
+    // Redirect to the "/cart" route
+    // You can use the useHistory hook from react-router-dom for this
+    // Example:
+    // history.push("/cart");
+  };
   const decreaseQuantity = () => {
     if (quantity > 1) {
       setQuantity(quantity - 1);
@@ -74,13 +84,18 @@ const SingleProduct = () => {
   const [items, setItems] = useState(Relateditems);
   const location = useLocation();
   const productData = location.state.productData;
+  const [selectedThumbnail, setSelectedThumbnail] = useState(
+    productData.images && productData.images.length > 0
+      ? productData.images[0] // Set the first thumbnail as the default selected thumbnail
+      : null
+  );
   console.log(productData);
-  const discountPercentage = Math.floor(Math.random() * (25 - 10 + 1) + 10);
-
+  // const discountPercentage = Math.floor(Math.random() * (25 - 10 + 1) + 10);
+  const discountPercentage = 50;
   // Calculate sale price
   const originalPrice = productData.price;
   const salePrice = originalPrice - (originalPrice * discountPercentage) / 100;
-
+  console.log("productData",productData);
   return (
     <>
       <header>
@@ -100,14 +115,23 @@ const SingleProduct = () => {
                       key={item.id}
                       src={item}
                       alt={item.itemName}
-                      className="thumbnail"
+                      // className="thumbnail"
+                      className={`thumbnail ${
+                        selectedThumbnail === item ? "selected" : ""
+                      }`}
+                      onClick={() => setSelectedThumbnail(item)}
                     />
                   ))}
               </div>
               <div className="main-product-image">
                 <img
                   // src="https://via.placeholder.com/500x500.png?text=Placeholder+Image"
-                  src={productData.image || productData.thumbnail}
+                  // src={productData.image || productData.thumbnail}
+                  src={
+                    selectedThumbnail ||
+                    productData.image ||
+                    productData.thumbnail
+                  }
                   alt="Main Product"
                   className="main-img"
                 />
@@ -160,7 +184,11 @@ const SingleProduct = () => {
                   </div>
                 </div>
                 <div className="d-lg-flex d-md-flex d-sm-flex d-flex ">
-                  <Button label={"Buy Now"} className={"product-btn1"} />
+                  <Button
+                    label={"Buy Now"}
+                    className={"product-btn1"}
+                    onClick={() => handleBuyNow({ product: productData})}
+                  />
                   <div className="size-box-wrapper d-flex justify-content-sm-between align-items-center ms-lg-2 ms-md-2 ms-sm-3 ms-5">
                     <div className="size-box">
                       <img src={wishlist} alt="" />
