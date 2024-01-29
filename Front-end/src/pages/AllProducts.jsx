@@ -12,10 +12,24 @@ import { useNavigate } from "react-router-dom";
 const AllProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const cartItems = useSelector((state) => state.cart);
 
+  // useEffect(() => {
+  //   const fetchAllProducts = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         "https://dummyjson.com/products?limit=100"
+  //       );
+  //       setProducts(response.data.products || []);
+  //     } catch (error) {
+  //       console.log(error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
   useEffect(() => {
     const fetchAllProducts = async () => {
       try {
@@ -24,7 +38,17 @@ const AllProducts = () => {
         );
         setProducts(response.data.products || []);
       } catch (error) {
-        console.log(error);
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          setError(`Server Error: ${error.response.status}`);
+        } else if (error.request) {
+          // The request was made but no response was received
+          setError("Network Error: Please check your internet connection");
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          setError("Error fetching data");
+        }
       } finally {
         setLoading(false);
       }
@@ -32,6 +56,10 @@ const AllProducts = () => {
 
     fetchAllProducts();
   }, []);
+
+  //   fetchAllProducts();
+  // }, []);
+
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
     console.log("Updated Cart in Local Storage:", cartItems);
@@ -56,6 +84,7 @@ const AllProducts = () => {
       </header>
       <div className="d-flex justify-content-center">
         {loading && <Loader />}
+        {error && <div className="error-message mb-5">{error}</div>}
       </div>
 
       <div className="row">

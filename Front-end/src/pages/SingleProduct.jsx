@@ -26,11 +26,12 @@ const SingleProduct = () => {
   const dispatch = useDispatch();
   const handleBuyNow = () => {
     // Dispatch the addToCart action with the selected product and quantity
-    dispatch(addToCart({ product: productData, quantity }));
+    dispatch(addToCart(productData, quantity));
     // Redirect to the "/cart" route
     // You can use the useHistory hook from react-router-dom for this
     // Example:
     // history.push("/cart");
+    // console.log("Selected Product:", selectedProduct);
   };
   const decreaseQuantity = () => {
     if (quantity > 1) {
@@ -89,13 +90,12 @@ const SingleProduct = () => {
       ? productData.images[0] // Set the first thumbnail as the default selected thumbnail
       : null
   );
-  console.log(productData);
   // const discountPercentage = Math.floor(Math.random() * (25 - 10 + 1) + 10);
   const discountPercentage = 50;
   // Calculate sale price
   const originalPrice = productData.price;
   const salePrice = originalPrice - (originalPrice * discountPercentage) / 100;
-  console.log("productData",productData);
+  console.log("productData", productData,"quantity",quantity);
   return (
     <>
       <header>
@@ -165,7 +165,7 @@ const SingleProduct = () => {
               <div className="d-lg-flex d-sm-block gap-3">
                 <div className="d-flex justify-content-sm-start mb-sm-3 mb-md-3 mb-lg-0 mb-3">
                   <div className="pmbtn-wrapper">
-                    <span onClick={decreaseQuantity} className="pmbtn">
+                    <span  className="pmbtn">
                       <BiMinus />
                     </span>
                   </div>
@@ -178,7 +178,7 @@ const SingleProduct = () => {
                     />
                   </div>
                   <div className="pmbtn-wrapper">
-                    <span onClick={increaseQuantity} className="pmbtn">
+                    <span className="pmbtn">
                       <FiPlus />
                     </span>
                   </div>
@@ -187,7 +187,7 @@ const SingleProduct = () => {
                   <Button
                     label={"Buy Now"}
                     className={"product-btn1"}
-                    onClick={() => handleBuyNow({ product: productData})}
+                    onClick={() => handleBuyNow(productData)}
                   />
                   <div className="size-box-wrapper d-flex justify-content-sm-between align-items-center ms-lg-2 ms-md-2 ms-sm-3 ms-5">
                     <div className="size-box">

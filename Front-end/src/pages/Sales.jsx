@@ -19,6 +19,7 @@ const Sales = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [response, setResponse] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -40,18 +41,30 @@ const Sales = () => {
     navigate("/allproducts");
   };
   useEffect(() => {
-    const saleData = async () => {
+    const fetchData = async () => {
       try {
-        const sale = await axios.get("https://fakestoreapi.com/products");
-        setResponse(sale.data);
+        const result = await axios.get("https://fakestoreapi.com/products");
+        setResponse(result.data);
       } catch (error) {
-        console.log(error);
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          setError(`Server Error: ${error.response.status}`);
+        } else if (error.request) {
+          // The request was made but no response was received
+          setError("Network Error: Please check your internet connection");
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          setError("Error fetching data");
+        }
       } finally {
         setLoading(false);
       }
     };
-    saleData();
+
+    fetchData();
   }, []);
+
   const settings = {
     dots: true,
     infinite: true,
@@ -122,6 +135,7 @@ const Sales = () => {
         <div className="row mt-5">
           {/* <Slider {...settings}> */}
           {loading && <Loader />}
+          {error && <div className="error-message">{error}</div>}
           {visibleItems.map((item) => {
             const {
               id,

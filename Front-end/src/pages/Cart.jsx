@@ -8,11 +8,15 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { removeFromCart } from "../redux/reducers/cartSlice";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import "./Cart.css";
 
 const Cart = () => {
   const breadcrumbItems = [{ text: "Home", link: "/" }, { text: "Cart" }];
   const [items, setItems] = useState([]);
   const [quantities, setQuantities] = useState({});
+  const [couponCode, setCouponCode] = useState("");
+  const [discountApplied, setDiscountApplied] = useState(false);
+  const [couponFeedback, setCouponFeedback] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
@@ -21,7 +25,15 @@ const Cart = () => {
     localStorage.setItem("cart", JSON.stringify(cart));
     setItems(cart);
   }, [cart]);
-
+  const applyCoupon = () => {
+    if (couponCode.toUpperCase() === "TENOFF") {
+      setDiscountApplied(true);
+      setCouponFeedback("Coupon applied successfully!");
+    } else {
+      setDiscountApplied(false);
+      setCouponFeedback("Invalid coupon code. Please try again.");
+    }
+  };
   const subtotal = items.reduce((total, item, index) => {
     const quantity = quantities[index] || 1;
     return total + quantity * item.discountPercentage;
@@ -42,6 +54,7 @@ const Cart = () => {
     setQuantities(updatedQuantities);
   };
   console.log(items);
+
   return (
     <>
       <header>
@@ -56,88 +69,119 @@ const Cart = () => {
             </p>
           ) : (
             <>
-              <table className="table table-hover table-responsive">
-                <thead>
-                  <tr>
-                    <th scope="col">Product</th>
-                    <th scope="col">Price</th>
-                    <th scope="col">Quantity</th>
-                    <th scope="col">Subtotal</th>
-                    <th scope="col">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map((item, index) => (
-                    // console.log(`Item ${index}:`, item);
-                  
-                    <tr key={index}>
-                      <th scope="row">
-                        {index + 1} {item.title}
-                      </th>
-                      <td>${item.discountPercentage}</td>
-                      <td>
-                        <input
-                          type="number"
-                          name={`quantity-${index}`}
-                          id={`quantity-${index}`}
-                          className="input-field cart-inp"
-                          min={0}
-                          max={10}
-                          value={quantities[index] || 1}
-                          onChange={(e) => {
-                            const newValue = parseInt(e.target.value, 10) || 1;
-                            // Check if the new value is greater than 10
-                            if (newValue > 10) {
-                              setQuantities({
-                                ...quantities,
-                                [index]: 10,
-                              });
-                            } else {
-                              // If within the valid range, update the state with the new value
-                              setQuantities({
-                                ...quantities,
-                                [index]: newValue,
-                              });
-                            }
-                          }}
-                        />
-                      </td>
-                      <td>
-                        $
-                        {(
-                          (quantities[index] || 1) * item.discountPercentage
-                        ).toFixed(2)}
-                      </td>
-                      <td>
-                        <span
-                          className="delete-icon"
-                          onClick={() => handleRemoveItem(item.id)}
-                          style={{ cursor: "pointer" }}
-                        >
-                          <RiDeleteBin6Line />
-                        </span>
-                      </td>
+              <div className="table-responsive">
+                <table className="table table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">Product</th>
+                      <th scope="col">Price</th>
+                      <th scope="col">Quantity</th>
+                      <th scope="col">Subtotal</th>
+                      <th scope="col">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {items.map((item, index) => (
+                      // console.log(`Item ${index}:`, item);
+
+                      <tr key={index}>
+                        <th scope="row">
+                          {index + 1} {item.title}
+                        </th>
+                        <td>${item.discountPercentage}</td>
+                        <td>
+                          <input
+                            type="number"
+                            name={`quantity-${index}`}
+                            id={`quantity-${index}`}
+                            className="input-field cart-inp"
+                            min={0}
+                            max={10}
+                            value={quantities[index] || 1}
+                            onChange={(e) => {
+                              const newValue =
+                                parseInt(e.target.value, 10) || 1;
+                              // Check if the new value is greater than 10
+                              if (newValue > 10) {
+                                setQuantities({
+                                  ...quantities,
+                                  [index]: 10,
+                                });
+                              } else {
+                                // If within the valid range, update the state with the new value
+                                setQuantities({
+                                  ...quantities,
+                                  [index]: newValue,
+                                });
+                              }
+                            }}
+                          />
+                        </td>
+                        <td>
+                          $
+                          {(
+                            (quantities[index] || 1) * item.discountPercentage
+                          ).toFixed(2)}
+                        </td>
+                        <td>
+                          <span
+                            className="delete-icon"
+                            onClick={() => handleRemoveItem(item.id)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <RiDeleteBin6Line />
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
               <div className="d-flex justify-content-between">
-                <Button label={"Return To Home"} className={"wishlist-btn"} />
-                <Button label={"Update Cart"} className={"wishlist-btn"} />
+                <Button
+                  label={"Return To Home"}
+                  className={"wishlist-btn"}
+                  onClick={() => navigate("/")}
+                />
+                <Button
+                  label={"Update Cart"}
+                  className={"wishlist-btn"}
+                  onClick={() => navigate("/allproducts")}
+                />
               </div>
               <div className="row mt-3">
                 <div className="col-md-6">
                   <div className="row d-flex align-items-baseline">
                     <div className="col-7">
-                      <input type="text" id="coupon" className="form-control" />
+                      <input
+                        type="text"
+                        id="coupon"
+                        className={`form-control ${
+                          discountApplied ? "is-valid" : "is-invalid"
+                        }`}
+                        value={couponCode}
+                        onChange={(e) => {
+                          setCouponCode(e.target.value);
+                          setCouponFeedback("");
+                        }}
+                      />
                     </div>
                     <div className="col-5">
                       <label htmlFor="coupon">
                         <Button
                           label={"Apply Coupon"}
                           className={"wishlist-btn"}
+                          onClick={applyCoupon}
                         />
                       </label>
+                    </div>
+                    <div className="col-12">
+                      <p className="mt-5">
+                        To get an extra 10% off, apply coupon code:{" "}
+                        <strong>TENOFF</strong>
+                      </p>
+                      <p className="mt-2 text-danger">{couponFeedback}</p>
+                      <p>Free shipping for Orders above 200!</p>
                     </div>
                   </div>
                 </div>
@@ -162,7 +206,8 @@ const Cart = () => {
                             $
                             {(
                               +subtotal.toFixed(2) +
-                              (subtotal < 200 ? shippingCost : 0)
+                              (subtotal < 200 ? shippingCost : 0) -
+                              (discountApplied ? subtotal * 0.1 : 0)
                             ).toFixed(2)}
                           </td>
                         </tr>
