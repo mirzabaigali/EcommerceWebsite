@@ -17,11 +17,33 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AppContext";
 import { useSelector } from "react-redux";
+import axios from "axios";
 const HomeNavbar = () => {
   const [menu, setMenu] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [error, setError] = useState(null);
   const [cartItemCount, setCartItemCount] = useState(0);
   const cartItems = useSelector((state) => state.cart);
-  const { token } = useAuth();
+  const { token, swap, setSwap } = useAuth();
+  const storedToken = localStorage.getItem("authToken");
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.get(
+        `https://dummyjson.com/products/search?q=${searchQuery}`
+      );
+      console.log("Response data:", response?.data?.products); // Log the response data
+      setSearchResults(response?.data?.products);
+      setError(null);
+      navigate(`/allproducts?search=${searchQuery}`); // Navigate to "/allproducts" with search query as parameter
+    } catch (error) {
+      setError(error);
+      setSearchResults([]);
+    }
+  };
+
   const navigate = useNavigate();
   useEffect(() => {
     const handleResize = () => {
@@ -41,7 +63,7 @@ const HomeNavbar = () => {
   useEffect(() => {
     // Calculate the total count of items in the cart
     const totalCount = cartItems;
-    console.log(totalCount.length);
+    // console.log(totalCount.length);
     setCartItemCount(totalCount.length);
   }, [cartItems]);
 
@@ -54,9 +76,9 @@ const HomeNavbar = () => {
     navigate("/SignUp");
     window.location.reload();
   };
-  useEffect(() => {
-    console.log("Token:", token);
-  }, [token]);
+  // useEffect(() => {
+  //   console.log("Token:", token);
+  // }, [token]);
   return (
     <>
       <Sale />
@@ -129,9 +151,11 @@ const HomeNavbar = () => {
                 <li>
                   <Link to="/About">About</Link>
                 </li>
-                {!token && (
+                {(!token || !storedToken) && (
                   <li>
-                    <Link to="/signup">SignUp</Link>
+                    <Link to="/signup" onClick={() => setSwap(!swap)}>
+                      SignUp
+                    </Link>
                   </li>
                 )}
               </ul>
@@ -142,10 +166,12 @@ const HomeNavbar = () => {
                   className="input-field form-control"
                   type="text"
                   name="text"
-                  id="text"
+                  id="search"
                   placeholder="what are you looking for?"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                <label htmlFor="text">
+                <label htmlFor="text" onClick={handleSearch}>
                   <img
                     src={searchIcon}
                     alt="search"
@@ -167,9 +193,11 @@ const HomeNavbar = () => {
                   style={{ cursor: "pointer" }}
                 />
                 {cartItemCount > 0 && (
-                  <span className="badge bg-secondary badge-number rounded-pill">{cartItemCount}</span>
+                  <span className="badge bg-secondary badge-number rounded-pill">
+                    {cartItemCount}
+                  </span>
                 )}
-                {token ? (
+                {storedToken ? (
                   <>
                     <img
                       src={user}
@@ -230,6 +258,14 @@ const HomeNavbar = () => {
                 )}
                 {/* </div> */}
               </div>
+            </div>
+            <div>
+              {error && <p>Error: {error.message}</p>}
+              {searchResults.map((item, index) => (
+                <div key={index}>
+                  <h1>{item.name}</h1>
+                </div>
+              ))}
             </div>
             {/* hamburger */}
             <div className="hamburger" onClick={handleMenu}>

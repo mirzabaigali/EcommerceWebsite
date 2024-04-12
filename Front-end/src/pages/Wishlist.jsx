@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import EcomHomePage from "./EcomHomePage";
 import Breadcrumb from "../components/Breadcrumb";
 import { Link } from "react-router-dom";
@@ -8,49 +8,24 @@ import del from "../assets/icon-delete.svg";
 import line from "../assets/Rectangleline.svg";
 import "./WishList.css";
 import Card from "./Card";
+import { useSelector, useDispatch } from "react-redux";
+import { removeFromWishlist } from "../redux/reducers/wishListSlice";
 
 const Wishlist = () => {
   const breadcrumbItems = [{ text: "Home", link: "/" }, { text: "WishList" }];
-  const wishlistdata = [
-    {
-      id: 1,
-      image: "https://example.com/item1.jpg",
-      itemName: "Product 1",
-      salePrice: 25.99,
-      originalPrice: 39.99,
-      ratings: 4.5,
-      discountPercentage: 35,
-    },
-    {
-      id: 2,
-      image: "https://example.com/item2.jpg",
-      itemName: "Product 2",
-      salePrice: 19.99,
-      originalPrice: 29.99,
-      ratings: 4.2,
-      discountPercentage: 33,
-    },
-    {
-      id: 3,
-      image: "https://example.com/item3.jpg",
-      itemName: "Product 3",
-      salePrice: 14.99,
-      originalPrice: 24.99,
-      ratings: 4.0,
-      discountPercentage: 40,
-    },
-    {
-      id: 4,
-      image: "https://example.com/item4.jpg",
-      itemName: "Product 4",
-      salePrice: 34.99,
-      originalPrice: 49.99,
-      ratings: 4.8,
-      discountPercentage: 30,
-    },
-  ];
+  const dispatch = useDispatch();
 
-  const [items, setItems] = useState(wishlistdata);
+  // Use useMemo to memoize the wishlistItems
+  const wishlistItems = useSelector((state) => state.wishlist) || [];
+  const memoizedWishlistItems = useMemo(() => wishlistItems, [wishlistItems]);
+
+  useEffect(() => {
+    localStorage.setItem("wishlist", JSON.stringify(memoizedWishlistItems));
+  }, [memoizedWishlistItems]);
+
+  const handleRemoveFromWishlist = (itemId) => {
+    dispatch(removeFromWishlist(itemId));
+  };
 
   return (
     <>
@@ -60,14 +35,14 @@ const Wishlist = () => {
       <main>
         <div className="container mt-5">
           <Breadcrumb items={breadcrumbItems} />
-          {items.length === 0 ? (
+          {memoizedWishlistItems?.length === 0 ? (
             <p>
               No items in your wishlist. <Link to="/">Go back to home</Link>
             </p>
           ) : (
             <>
               <div className="wishlist-wrapper d-flex justify-content-between align-items-center">
-                <p>Wishlist({items.length})</p>
+                <p>Wishlist({memoizedWishlistItems?.length})</p>
                 <div>
                   <Button
                     label={"Move All To Bag"}
@@ -76,7 +51,7 @@ const Wishlist = () => {
                 </div>
               </div>
               <div className="wishlistcard-wrapper row row-cols-1  row-cols-md-2 row-cols-lg-4 g-4 justify-content-center">
-                {items.map((item) => (
+                {memoizedWishlistItems.map((item) => (
                   <div
                     className="wishlist-card col-auto col-sm-6 col-md-6 col-lg-3"
                     key={item.id}
@@ -125,7 +100,7 @@ const Wishlist = () => {
               </div>
               <div className="container m-0 p-0">
                 <div className="row">
-                  {wishlistdata.map((item, ind) => {
+                  {memoizedWishlistItems?.map((item, ind) => {
                     const {
                       originalPrice,
                       itemName,

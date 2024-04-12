@@ -7,7 +7,7 @@ import "./Account.css";
 const Account = () => {
   const breadcrumbItems = [{ text: "Home", link: "/" }, { text: "Account" }];
   const [activeTab, setActiveTab] = useState("v-pills-home");
-
+  const name = localStorage.getItem("userName");
   const handleTabClick = (tabId) => {
     setActiveTab(tabId);
   };
@@ -22,7 +22,7 @@ const Account = () => {
           <div className="d-flex justify-content-between align-items-baseline">
             <Breadcrumb items={breadcrumbItems} />
             <div>
-              Welcome <span className="account-name">Arif.</span>
+              Welcome <span className="account-name">{name}.</span>
             </div>
           </div>
           <div className="row d-flex justify-content-between">

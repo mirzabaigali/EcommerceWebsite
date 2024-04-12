@@ -70,7 +70,7 @@ input[type="checkbox"].box-check {
 
 .total-horiztanl-line {
     max-width: 100%;
-    width: 422px;
+    width: 530px;
     height: 1px;
     border: none;
     background-color: rgba(0, 0, 0, 0.4);
@@ -150,3 +150,12 @@ input[type="checkbox"].box-check {
         right: 27px;
     }
 }
+.displayItems{
+    width: 18%;
+    aspect-ratio: 3/2 !important;
+    object-fit: contain;
+}
+.table-container {
+    max-height: 250px; 
+    overflow-y: auto;
+  }

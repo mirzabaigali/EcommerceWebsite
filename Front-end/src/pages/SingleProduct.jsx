@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { addToWishlist } from "../redux/reducers/wishListSlice";
 import Footer from "../components/Footer";
 import EcomHomePage from "./EcomHomePage";
 import Breadcrumb from "../components/Breadcrumb";
@@ -15,6 +16,8 @@ import { useLocation } from "react-router-dom";
 import { addToCart } from "../redux/reducers/cartSlice";
 import { useDispatch } from "react-redux";
 import "./SingleProduct.css";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const SingleProduct = () => {
   const breadcrumbItems = [
@@ -23,15 +26,17 @@ const SingleProduct = () => {
   ];
   const sizes = ["XS", "S", "M", "L", "XL"];
   const [quantity, setQuantity] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const handleAddToWishlist = () => {
+    dispatch(addToWishlist(productData));
+    console.log("click");
+  };
   const handleBuyNow = () => {
     // Dispatch the addToCart action with the selected product and quantity
     dispatch(addToCart(productData, quantity));
-    // Redirect to the "/cart" route
-    // You can use the useHistory hook from react-router-dom for this
-    // Example:
-    // history.push("/cart");
-    // console.log("Selected Product:", selectedProduct);
+    navigate("/cart");
   };
   const decreaseQuantity = () => {
     if (quantity > 1) {
@@ -95,7 +100,26 @@ const SingleProduct = () => {
   // Calculate sale price
   const originalPrice = productData.price;
   const salePrice = originalPrice - (originalPrice * discountPercentage) / 100;
-  console.log("productData", productData,"quantity",quantity);
+  console.log("productData", productData, "quantity", quantity);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(
+          `https://dummyjson.com/products/category/${productData.category}`
+        );
+        setSelectedCategory(response?.data?.products);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, [productData]);
+  useEffect(() => {
+    window.scroll(0, 0);
+  }, []);
+  console.log(selectedCategory);
   return (
     <>
       <header>
@@ -149,7 +173,12 @@ const SingleProduct = () => {
                 <div className="divider ms-3"></div>
                 <p className="stock ms-2">In Stock</p>
               </div>
-              <p className="price">${salePrice.toFixed(2)}</p>
+              {/* <p className="price">${salePrice.toFixed(2)}</p> */}
+              <p className="price">
+                $
+                {productData.discountPercentage ||
+                  (productData.price * 0.9).toFixed(2)}
+              </p>
               <p className="describtion">{productData.description}</p>
               <div className="divider1"></div>
               <div className="d-lg-flex  mt-3">
@@ -165,7 +194,7 @@ const SingleProduct = () => {
               <div className="d-lg-flex d-sm-block gap-3">
                 <div className="d-flex justify-content-sm-start mb-sm-3 mb-md-3 mb-lg-0 mb-3">
                   <div className="pmbtn-wrapper">
-                    <span  className="pmbtn">
+                    <span className="pmbtn">
                       <BiMinus />
                     </span>
                   </div>
@@ -190,7 +219,7 @@ const SingleProduct = () => {
                     onClick={() => handleBuyNow(productData)}
                   />
                   <div className="size-box-wrapper d-flex justify-content-sm-between align-items-center ms-lg-2 ms-md-2 ms-sm-3 ms-5">
-                    <div className="size-box">
+                    <div className="size-box" onClick={handleAddToWishlist}>
                       <img src={wishlist} alt="" />
                     </div>
                   </div>
@@ -236,36 +265,38 @@ const SingleProduct = () => {
             </div>
           </div>
           <div className="wishlistcard-wrapper row row-cols-1  row-cols-md-2 row-cols-lg-4 g-4 justify-content-center">
-            {items.map((item) => (
+            {selectedCategory?.slice(0, 4).map((item) => (
               <div
                 className="wishlist-card col-auto col-sm-6 col-md-6 col-lg-3"
-                key={item.id}
+                key={item?.id}
               >
                 <div className="card sale-card">
                   <div className="discount-box">
                     <span className="discount-percentage">
-                      -{item.discountPercentage}%
+                      -{item?.discountPercentage}%
                     </span>
                   </div>
                   <div className="sale-cardbody">
                     <img
-                      src={item.image}
-                      alt={item.itemName}
-                      className="img-fluid"
+                      src={item?.images[0]}
+                      alt={item?.title}
+                      className="img-fluid related-img"
                     />
                     <div className="d-flex flex-column gap-2 align-items-end pe-2">
                       {/* <img src={del} alt="del" /> */}
                     </div>
                   </div>
                   <div style={{ marginTop: "16px" }}>
-                    <p className="sale-itemName">{item.itemName}</p>
+                    <p className="sale-itemName">{item?.title}</p>
                     <div className="d-flex justify-content-between">
-                      <p className="sale-price">{item.salePrice}</p>{" "}
+                      <p className="sale-price">
+                        {(item?.price * 0.7).toFixed(2)}
+                      </p>{" "}
                       <span className="sale-price1 text-decoration-line-through">
-                        {item.originalPrice}
+                        {item?.price}
                       </span>
                     </div>
-                    <p className="sale-rating">{item.ratings}</p>
+                    <p className="sale-rating">{item?.rating}</p>
                   </div>
                 </div>
               </div>

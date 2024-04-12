@@ -16,11 +16,22 @@ import image3 from "../assets/signup images/image3.jpg";
 import image4 from "../assets/signup images/image4.jpg";
 import image5 from "../assets/signup images/image5.jpg";
 import { useAuth } from "../Context/AppContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { postData } from "../components/Api";
 import Loader2 from "../components/Loader2";
+import { toast } from "react-toastify";
+import { Modal, Button as Button1 } from "react-bootstrap";
+
 const Login = () => {
-  const { token, login } = useAuth();
+  const { token, login, swap, setSwap } = useAuth();
+
+  const [showModal, setShowModal] = useState(false);
+
+  const toggleModal = () => {
+    setShowModal(!showModal);
+  };
+  console.log("===>signup", token);
+
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -46,7 +57,8 @@ const Login = () => {
   };
   const handleLoginClick = (e) => {
     e.preventDefault();
-    login(!token);
+    setSwap(!swap);
+    // login(!token);
   };
 
   const handleLogin = async (e) => {
@@ -58,12 +70,14 @@ const Login = () => {
           email: formData.email,
           password: formData.password,
         });
-        console.log(result);
-        const { token } = result;
+        toast.success("Login Successful");
+        const { token, name } = result;
         login(token);
         localStorage.setItem("authToken", token);
+        localStorage.setItem("userName", name);
         navigate("/");
       } catch (error) {
+        toast.error("Invalid Credentials");
         console.error("Error login:", error);
       } finally {
         setLoading(false);
@@ -81,11 +95,17 @@ const Login = () => {
           password: formData.password,
         });
         console.log(result);
-        const { token } = result;
+        toast.success("Sign Up Successful");
+        const { token, name } = result;
+        localStorage.setItem("userName", name);
+
+        console.log(result);
+
         login(token);
         localStorage.setItem("authToken", token);
         navigate("/");
       } catch (error) {
+        toast.error("Sign up failed");
         console.error("Error signing up:", error);
       } finally {
         setLoading(false);
@@ -135,7 +155,7 @@ const Login = () => {
     }));
   };
   useEffect(() => {
-    login(!!token);
+    // login(!!token);
   }, [token, login]);
 
   return (
@@ -193,7 +213,7 @@ const Login = () => {
             </Slider>
           </div>
           <div className="col-md-5 d-flex justify-content-center align-items-center">
-            {token ? (
+            {swap ? (
               <form action="" className="form-box">
                 <h3 className="text1">Log in to Exclusive</h3>
                 <h6 className="text2">Enter your details below</h6>
@@ -244,7 +264,7 @@ const Login = () => {
                       disabled={loading}
                     />
                   </div>
-                  <div className="mt-5 forget">
+                  <div className="mt-5 forget" onClick={toggleModal}>
                     <p>Forget Password?</p>
                   </div>
                 </div>
@@ -342,6 +362,62 @@ const Login = () => {
         </div>
       </div>
       <Footer />
+      <Modal show={showModal} onHide={toggleModal}>
+        <div className="text-center">
+          <h3>Reset Password</h3>
+          <p className="text-muted">Enter your email to reset your password</p>
+        </div>
+        <div className="form-group">
+          <label htmlFor="emailp" className="ms-4">
+            Email
+          </label>
+          <input
+            type="email"
+            name="emailp"
+            id="emailp"
+            placeholder="m@example.com"
+            required
+            className="form-control mt-2 custom-input"
+            style={{ width: "90%", marginLeft: "5%" }}
+          />
+        </div>
+        <div className="text-center">
+          <button className="btn btn-dark mt-4 " style={{ width: "90%" }}>
+            Submit
+          </button>
+        </div>
+        <div className="mt-5 mb-3 ms-4">
+          <Link to="/signup" onClick={toggleModal}>
+            Remembered your password? Login
+          </Link>
+        </div>
+
+        {/* <Modal.Header closeButton>
+          <Modal.Title>Reset Password</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Enter your email to reset your password</p>
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              className="form-control"
+              id="email"
+              aria-describedby="emailHelp"
+              placeholder="Enter email"
+            />
+            <small id="emailHelp" className="form-text text-muted">
+              We'll never share your email with anyone else.
+            </small>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button1 variant="secondary" onClick={toggleModal}>
+            Close
+          </Button1>
+          <Button1 variant="primary">Submit</Button1>
+        </Modal.Footer> */}
+      </Modal>
     </div>
   );
 };

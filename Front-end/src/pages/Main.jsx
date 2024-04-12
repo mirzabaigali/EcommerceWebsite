@@ -1,22 +1,28 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import EcomHomePage from "../pages/EcomHomePage";
 import Footer from "../components/Footer";
-import DropDown from "../assets/DropDown1.svg";
-import appleLogo from "../assets/apple.png";
 import "./Main.css";
 import { Carousel } from "react-bootstrap";
 import Sales from "./Sales";
-import Breadcrumb from "../components/Breadcrumb";
 import Categories from "./Categories";
 import BestSelling from "./BestSelling";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import bannerImage1 from "../assets/new images/banner1.png";
+import bannerImage2 from "../assets/new images/Frame 600.png";
+import NewArrival from "./NewArrival";
 const Main = () => {
+  const [categoryList, setCategoryList] = useState([]);
+  const [hoveredCategory, setHoveredCategory] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const navigate = useNavigate();
   const slides = [
     {
       id: 1,
-      name: "Iphone 15 Pro",
-      discount: "Up to 10% off Voucher",
-      imageUrl:
-        "https://www.apple.com/newsroom/images/2023/09/apple-unveils-iphone-15-pro-and-iphone-15-pro-max/tile/Apple-iPhone-15-Pro-lineup-hero-230912.jpg.og.jpg?202311010242",
+      // name: "Iphone 15 Pro",
+      // discount: "Up to 10% off Voucher",
+      imageUrl: bannerImage1,
     },
     {
       id: 2,
@@ -46,82 +52,150 @@ const Main = () => {
         "https://cdn.pixabay.com/photo/2021/09/07/07/11/game-console-6603120_640.jpg",
     },
   ];
-  const breadcrumbItems = [
-    { text: "Home", link: "/" },
-    { text: "Category", link: "/category" },
-    { text: "Current Page" },
-  ];
   useEffect(() => {
     // window.scrollTo(0, 0);
   }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "https://dummyjson.com/products/categories"
+        );
+        setCategoryList(response?.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  const handleCategoryClick = (category) => {
+    console.log(category);
+    setSelectedCategory(category);
+    navigate(`/selectedcategory`, { state: category });
+  };
   return (
     <>
       <header>
         <EcomHomePage />
       </header>
-      {/* <Breadcrumb items={breadcrumbItems} /> */}
       <div className="container">
         <div className="row">
           <div className="col-sm-4 main-left">
-            <div>
+            <div className="col-sm-5 ">
               <ul className="main-list">
-                <li>
-                  Woman’s Fashion
-                  <span className="main-dropdown">
-                    <img src={DropDown} alt="" />
-                  </span>
-                </li>
-                <li>
-                  Men’s Fashion
-                  <span className="main-dropdown1">
-                    <img src={DropDown} alt="" />
-                  </span>
-                </li>
-                <li>Electronics</li>
-                <li>Home & Lifestyle</li>
-                <li>Medicine</li>
-                <li>Sports & Outdoor</li>
-                <li>Baby’s & Toys</li>
-                <li>Groceries & Pets</li>
-                <li>Health & Beauty</li>
+                {loading ? (
+                  <div className="d-flex justify-content-center align-items-center">
+                    <div class="spinner"></div>
+                  </div>
+                ) : (
+                  categoryList.slice(0, 10).map((item, index) => (
+                    <li
+                      key={item.id || index}
+                      className={hoveredCategory === item.id ? "zoom-in" : ""}
+                      onMouseEnter={() => setHoveredCategory(item.id)}
+                      onMouseLeave={() => setHoveredCategory(null)}
+                      onClick={() => handleCategoryClick(item)}
+                    >
+                      {item}
+                    </li>
+                  ))
+                )}
+              </ul>
+            </div>
+            <div className="col-sm-5 ">
+              <ul className="main-list">
+                {loading ? (
+                  // <div class="spinner"></div>
+                  <></>
+                ) : (
+                  categoryList.slice(10, 20).map((item, index) => (
+                    <li
+                      key={item.id || index}
+                      className={hoveredCategory === item.id ? "zoom-in" : ""}
+                      onMouseEnter={() => setHoveredCategory(item.id)}
+                      onMouseLeave={() => setHoveredCategory(null)}
+                      onClick={() => handleCategoryClick(item)}
+                    >
+                      {item}
+                    </li>
+                  ))
+                )}
               </ul>
             </div>
             <div className="vertical-line"></div>
           </div>
           <div className="col-sm-12 col-md-12 col-lg-8 main-right">
-            <Carousel controls={false}>
-              {slides.map((slide) => (
-                <Carousel.Item key={slide.id}>
-                  <div
-                    className="carousel-image imsgr"
-                    style={{ backgroundImage: `url(${slide.imageUrl})` }}
-                  >
-                    <div className="carousel-content">
-                      <h3
-                        className={`${
-                          slide.id === 3
-                            ? "carosol-textid3 mx-2"
-                            : "carosol-text mx-2"
-                        }`}
-                      >
-                        {slide.name}
-                      </h3>
+            {loading ? (
+              <div className="spinner spinner-center"></div>
+            ) : (
+              <Carousel controls={false}>
+                {/* {slides.map((slide) => (
+                  <Carousel.Item key={slide.id}>
+                    <div
+                      className="carousel-image imsgr"
+                      style={{ backgroundImage: `url(${slide.imageUrl})` }}
+                    >
+                      <div className="carousel-content">
+                        <h3
+                          className={`${
+                            slide.id === 3
+                              ? "carosol-textid3 mx-2"
+                              : "carosol-text mx-2"
+                          }`}
+                        >
+                          {slide.name}
+                        </h3>
 
-                      <p
-                        className={`${
-                          slide.id === 3
-                            ? "carosol-textid3 mx-2"
-                            : "discount mx-2"
-                        }`}
-                      >{`${slide.discount} Discount`}</p>
-                      <button className="btn btn-outline-primary mx-2">
-                        Shop Now
-                      </button>
+                        <p
+                          className={`${
+                            slide.id === 3
+                              ? "carosol-textid3 mx-2"
+                              : "discount mx-2"
+                          }`}
+                        >{`${slide.discount} Discount`}</p>
+                        <button className="btn btn-outline-primary mx-2">
+                          Shop Now
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </Carousel.Item>
-              ))}
-            </Carousel>
+                  </Carousel.Item>
+                ))} */}
+                {slides.map((slide) => (
+                  <Carousel.Item key={slide.id}>
+                    <div
+                      className="carousel-image imsgr"
+                      style={{ backgroundImage: `url(${slide.imageUrl})` }}
+                    >
+                      {slide.id !== 1 ? ( // Display text and button for slides other than the one with id 1
+                        <div className="carousel-content">
+                          <h3
+                            className={`${
+                              slide.id === 3
+                                ? "carosol-textid3 mx-2"
+                                : "carosol-text mx-2"
+                            }`}
+                          >
+                            {slide.name}
+                          </h3>
+                          <p
+                            className={`${
+                              slide.id === 3
+                                ? "carosol-textid3 mx-2"
+                                : "discount mx-2"
+                            }`}
+                          >{`${slide.discount} Discount`}</p>
+                          <button className="btn btn-outline-primary mx-2">
+                            Shop Now
+                          </button>
+                        </div>
+                      ) : null}
+                    </div>
+                  </Carousel.Item>
+                ))}
+              </Carousel>
+            )}
           </div>
         </div>
       </div>
@@ -134,6 +208,16 @@ const Main = () => {
         </div>
         <div className="row">
           <BestSelling />
+        </div>
+        <div className="container">
+          <div className="row">
+            <div className="col-md-12">
+              <img src={bannerImage2} alt="img" className="img-fluid" />
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <NewArrival />
         </div>
       </div>
       <footer>

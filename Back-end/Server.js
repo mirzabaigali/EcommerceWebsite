@@ -6,7 +6,7 @@ const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
-
+const contactRoutes = require("./routes/contactRoutes");
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -24,7 +24,7 @@ connectDb(DATABASE_URL);
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/user", userRoutes);
-
+app.use("/api",contactRoutes)
 // Test route
 app.get("/", (req, res) => {
   res.send(`Hello, World!`);

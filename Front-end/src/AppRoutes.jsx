@@ -12,6 +12,7 @@ import Account from "./pages/Account";
 import SingleProductPage from "./pages/SingleProduct";
 import { useAuth } from "./Context/AppContext";
 import AllProducts from "./pages/AllProducts";
+import SelectedCategory from "./pages/SelectedCategory";
 
 const AppRoutes = () => {
   const { token } = useAuth();
@@ -28,6 +29,7 @@ const AppRoutes = () => {
       <Route path="/account" element={<Account />} />
       <Route path="/product/:id" element={<SingleProductPage />} />
       <Route path="/allproducts" element={<AllProducts />} />
+      <Route path="/selectedcategory" element={<SelectedCategory />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

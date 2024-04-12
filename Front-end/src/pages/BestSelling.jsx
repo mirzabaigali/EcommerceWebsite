@@ -3,6 +3,7 @@ import line from "../assets/Rectangleline.svg";
 import Button from "../components/Button";
 import "./BestSelling.css";
 import Card from "./Card";
+import { useNavigate } from "react-router-dom";
 const BestSelling = () => {
   const Bestselling = [
     {
@@ -42,6 +43,7 @@ const BestSelling = () => {
       discountPercentage: 30,
     },
   ];
+  const navigate = useNavigate();
   return (
     <div className="bestselling-wrapper">
       <div className="d-flex align-items-baseline">
@@ -54,10 +56,14 @@ const BestSelling = () => {
       </div>
       <div className="Brand-wrapper d-flex gap-5 align-items-end justify-content-between">
         <div className="brand-category">
-          <span className="brand-name">Browse By Category</span>
+          <span className="brand-name">Best Selling Products</span>
         </div>
         <div>
-          <Button label={"View All"} className={"button-best"} />
+          <Button
+            label={"View All"}
+            className={"button-best"}
+            onClick={() => navigate("/allproducts")}
+          />
         </div>
       </div>
       <div className="container">

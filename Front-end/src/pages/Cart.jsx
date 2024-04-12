@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { removeFromCart } from "../redux/reducers/cartSlice";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { toast } from "react-toastify";
 import "./Cart.css";
 
 const Cart = () => {
@@ -20,10 +21,42 @@ const Cart = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
+  console.log("cart================>", cart);
   // Update local state when cart changes
   useEffect(() => {
+    const storedQuantities = JSON.parse(localStorage.getItem("quantities"));
+    const storedCoupon = JSON.parse(localStorage.getItem("coupon"));
+    if (storedQuantities) {
+      setQuantities(storedQuantities);
+    }
+    if (storedCoupon) {
+      setCouponCode(storedCoupon.code);
+      setDiscountApplied(storedCoupon.applied);
+      setCouponFeedback(storedCoupon.feedback);
+    }
+  }, []);
+  useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
+    localStorage.setItem("quantities", JSON.stringify(quantities));
+    localStorage.setItem(
+      "coupon",
+      JSON.stringify({
+        code: couponCode,
+        applied: discountApplied,
+        feedback: couponFeedback,
+      })
+    );
     setItems(cart);
+  }, [cart, quantities, couponCode, discountApplied, couponFeedback]);
+
+  useEffect(() => {
+    // Check if the cart is empty and reset quantities, coupon, and feedback
+    if (cart.length === 0) {
+      setQuantities({});
+      setCouponCode("");
+      setDiscountApplied(false);
+      setCouponFeedback("");
+    }
   }, [cart]);
   const applyCoupon = () => {
     if (couponCode.toUpperCase() === "TENOFF") {
@@ -36,12 +69,19 @@ const Cart = () => {
   };
   const subtotal = items.reduce((total, item, index) => {
     const quantity = quantities[index] || 1;
-    return total + quantity * item.discountPercentage;
+    if (item.discountPercentage !== undefined) {
+      return total + quantity * item.discountPercentage;
+    } else {
+      // If item.discountPercentage doesn't exist, use original price
+      return total + quantity * (item.price * 0.9).toFixed(2);
+    }
   }, 0);
   const shippingCost = 20;
   const handleRemoveItem = (index) => {
     // Dispatch an action to remove the item from the cart
+
     dispatch(removeFromCart(index));
+    toast.error("item removed from cart");
 
     // Update the local state accordingly (remove the item from 'items' and 'quantities')
     const updatedItems = [...items];
@@ -53,7 +93,6 @@ const Cart = () => {
     setItems(updatedItems);
     setQuantities(updatedQuantities);
   };
-  console.log(items);
 
   return (
     <>
@@ -85,10 +124,35 @@ const Cart = () => {
                       // console.log(`Item ${index}:`, item);
 
                       <tr key={index}>
-                        <th scope="row">
-                          {index + 1} {item.title}
+                        <th scope="row" style={{ width: "40%" }}>
+                          {index + 1}{" "}
+                          <img
+                            src={
+                              item.images
+                                ? item.images[3]
+                                  ? item.images[3]
+                                  : item.images[0]
+                                : item.image
+                            }
+                            alt="img"
+                            style={{
+                              paddingLeft: "10px",
+                              width: "10%",
+                              aspectRatio: "3/2",
+                              objectFit: "cover",
+                              backgroundColor: "#fff",
+                            }}
+                          />{" "}
+                          <span className="ms-2">{item.title}</span>
                         </th>
-                        <td>${item.discountPercentage}</td>
+                        <td>
+                          $
+                          {/* {item.discountPercentage || item.price
+                            ? (item.price * 0.9).toFixed(2)
+                            : item.price} */}
+                          {item.discountPercentage ||
+                            (item.price * 0.9).toFixed(2)}
+                        </td>
                         <td>
                           <input
                             type="number"
@@ -120,7 +184,10 @@ const Cart = () => {
                         <td>
                           $
                           {(
-                            (quantities[index] || 1) * item.discountPercentage
+                            (quantities[index] || 1) *
+                              item.discountPercentage ||
+                            (quantities[index] || 1) *
+                              (item.price * 0.9).toFixed(2)
                           ).toFixed(2)}
                         </td>
                         <td>
@@ -180,7 +247,17 @@ const Cart = () => {
                         To get an extra 10% off, apply coupon code:{" "}
                         <strong>TENOFF</strong>
                       </p>
-                      <p className="mt-2 text-danger">{couponFeedback}</p>
+                      <p
+                        className={
+                          couponFeedback
+                            ? couponFeedback.includes("Invalid")
+                              ? "text-danger"
+                              : "text-success"
+                            : ""
+                        }
+                      >
+                        {couponFeedback}
+                      </p>
                       <p>Free shipping for Orders above 200!</p>
                     </div>
                   </div>
@@ -217,7 +294,32 @@ const Cart = () => {
                       <Button
                         label={"Process to checkout"}
                         className={"custom-button"}
-                        onClick={() => navigate("/checkout")}
+                        onClick={() => {
+                          const itemsWithQuantity = items.map(
+                            (item, index) => ({
+                              ...item,
+                              price: item.discountedPrice,
+                              originalPrice: item.price,
+                              quantity: quantities[index] || 1,
+                            })
+                          );
+
+                          let total = subtotal;
+                          let finalTotal = total;
+
+                          if (discountApplied) {
+                            finalTotal = total * 0.9; // Apply 10% discount if coupon applied
+                          }
+
+                          navigate("/checkout", {
+                            state: {
+                              items: itemsWithQuantity,
+                              subtotal: subtotal,
+                              shippingCost: subtotal < 200 ? 20 : 0,
+                              finalTotal: finalTotal,
+                            },
+                          });
+                        }}
                       />
                     </div>
                   </div>

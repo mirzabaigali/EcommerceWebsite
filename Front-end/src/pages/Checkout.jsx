@@ -10,14 +10,22 @@ import img2 from "../assets/image 31.png";
 import img3 from "../assets/image 32.png";
 import img4 from "../assets/image 33.png";
 import Button from "../components/Button";
+import { useLocation } from "react-router-dom";
+
 const Checkout = () => {
   const breadcrumbItems = [
-    { text: "Account", link: "" },
+    { text: "Account", link: "/" },
     { text: "My Account", link: "/account" },
-    { text: "Product", link: "" },
+    { text: "Product", link: "/allproducts" },
     { text: "View Cart", link: "/cart" },
     { text: "CheckOut" },
   ];
+
+  const location = useLocation();
+  const { items, subtotal, shippingCost, finalTotal } = location.state
+    ? location.state
+    : { items: [], subtotal: 0, shippingCost: 0, finalTotal: 0 };
+  console.log(items);
   return (
     <>
       <header>
@@ -109,40 +117,59 @@ const Checkout = () => {
                   </label>
                 </div>
               </div>
-              <div className="col-md-6 d-flex justify-content-center align-items-center   mt-lg-0 mt-md-0 mt-sm-2 mt-2">
+              <div className="col-md-6 d-flex justify-content-center align-items-center rightBlock  mt-lg-0 mt-md-0 mt-sm-2 mt-2">
                 <div className="checkout-right  text-center">
-                  <table class="table table-borderless">
-                    <tr>
-                      <td>
-                        <img src={joystick} alt="joystick" />
-                      </td>
-                      <td>$650</td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <img src={pc} alt="pc" />
-                      </td>
-                      <td>$1150</td>
-                    </tr>
-                  </table>
-                  <table className="table table-borderless">
-                    <tr>
-                      <td>SubTotal</td>
-                      <td>$1800</td>
-                    </tr>
-                  </table>
-                  <div className="total-horiztanl-line"></div>
-                  <table className="table table-borderless">
-                    <tr>
-                      <td className="test">Shipping</td>
-                      <td className="test">free</td>
-                    </tr>
-                  </table>
-                  <div className="total-horiztanl-line"></div>
-                  <div className="total-box">
-                    <p>Total</p>
-                    <p>$1800</p>
+                  <div className="table-container">
+                    <table class="table table-borderless">
+                      <tr>
+                        {items.map((item) => (
+                          <tr key={item.id}>
+                            <td className="text-start">
+                              <img
+                                src={item.thumbnail || item.image}
+                                alt="img"
+                                className="displayItems"
+                              />
+                            </td>
+                            <td className="text-start">{item.quantity}</td>
+                            <td>
+                              $
+                              {/* {(
+                                item.quantity * item.discountPercentage
+                              ).toFixed(2)} */}
+                              {(item.discountPercentage !== undefined
+                                ? item.quantity * item.discountPercentage
+                                : item.quantity * item.originalPrice * 0.9
+                              ).toFixed(2)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tr>
+                    </table>
                   </div>
+                  <div className="total-horiztanl-line"></div>
+                  <table className="table table-borderless">
+                    <tr className="text-start">
+                      <td>SubTotal</td>
+                      <td className="text-end">{subtotal.toFixed(2)}</td>
+                    </tr>
+                  </table>
+                  <div className="total-horiztanl-line"></div>
+                  <table className="table table-borderless">
+                    <tr>
+                      <td className="text-start">Shipping</td>
+                      <td className="text-end">{shippingCost}</td>
+                    </tr>
+                  </table>
+                  <div className="total-horiztanl-line"></div>
+                  <table className="table table-borderless">
+                    <tr>
+                      <td className="text-start">Total</td>
+                      <td className="text-end">
+                        {+finalTotal.toFixed(2) + shippingCost}
+                      </td>
+                    </tr>
+                  </table>
                   <div className="payments d-flex justify-content-between mt-2">
                     <div>
                       <input type="radio" name="paymentMethod" id="bank" />
@@ -171,7 +198,7 @@ const Checkout = () => {
                       Cash on delivery
                     </label>
                   </div>
-                  <div className="d-flex justify-content-between mt-2">
+                  {/* <div className="d-flex justify-content-between mt-2">
                     <input
                       type="text"
                       name=""
@@ -179,7 +206,7 @@ const Checkout = () => {
                       className="form-control payment-input"
                     />
                     <Button label={"Apply Coupon"} className={"couon-button"} />
-                  </div>
+                  </div> */}
                   <div className="mt-5 d-flex justify-content-start">
                     <Button label={"Place Order"} className={"couon-button"} />
                   </div>
