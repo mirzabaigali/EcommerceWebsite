@@ -1,0 +1,50 @@
+.sale-wrapper {
+  width: 100vw;
+  min-height: 48px;
+  background-color: var(--black-color);
+  text-align: center;
+}
+.flash-sale {
+  color: var(--white-color);
+  font-family: Poppins;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 21px;
+  padding-top: 18px;
+}
+.shopnow {
+  margin-left: 8px;
+  text-align: center;
+  font-family: Poppins;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  text-decoration-line: underline;
+  cursor: pointer;
+}
+.dropdown {
+  color: var(--white-color);
+  font-family: Poppins;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 21px;
+  padding-top: 18px;
+}
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.blink-animation {
+  animation: blink 1s infinite;
+}

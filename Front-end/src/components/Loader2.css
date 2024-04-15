@@ -1,0 +1,42 @@
+.loader {
+  max-width: 100%;
+  max-height: 100%;
+  width: 100px;
+  height: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: 0.5s linear;
+}
+
+.ball {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  animation: bounce6135 1s alternate infinite;
+  transition: 0.5s linear;
+}
+
+.ball {
+  background: #fff;
+}
+
+.ball:nth-child(2) {
+  animation-delay: 0.25s;
+}
+
+.ball:nth-child(3) {
+  animation-delay: 0.5s;
+}
+
+@keyframes bounce6135 {
+  from {
+    transform: scale(2);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
