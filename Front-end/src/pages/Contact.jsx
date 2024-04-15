@@ -46,7 +46,7 @@ const Contact = () => {
       return;
     }
     try {
-      await axios.post("http://localhost:8000/api/contact", formData);
+      await axios.post("https://ecommerce-backend-1-qzcn.onrender.com/api/contact", formData);
       toast.success("Form submitted successfully");
       setFormData({ name: "", email: "", phone: "", message: "" });
     } catch (error) {
