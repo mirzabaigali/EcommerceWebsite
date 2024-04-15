@@ -20,7 +20,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { postData } from "../components/Api";
 import Loader2 from "../components/Loader2";
 import { toast } from "react-toastify";
-import { Modal, Button as Button1 } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 
 const Login = () => {
   const { token, login, swap, setSwap } = useAuth();
@@ -391,32 +391,6 @@ const Login = () => {
             Remembered your password? Login
           </Link>
         </div>
-
-        {/* <Modal.Header closeButton>
-          <Modal.Title>Reset Password</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Enter your email to reset your password</p>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              className="form-control"
-              id="email"
-              aria-describedby="emailHelp"
-              placeholder="Enter email"
-            />
-            <small id="emailHelp" className="form-text text-muted">
-              We'll never share your email with anyone else.
-            </small>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button1 variant="secondary" onClick={toggleModal}>
-            Close
-          </Button1>
-          <Button1 variant="primary">Submit</Button1>
-        </Modal.Footer> */}
       </Modal>
     </div>
   );

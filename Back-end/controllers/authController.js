@@ -259,102 +259,6 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
-exports.resetPasswordGet = async (req, res) => {
-  try {
-    const { token } = req.params;
-
-    // Decode the token using URL-safe decoding
-    const decodedToken = decodeURIComponent(token);
-
-    // Check if JWT_SECRET_KEY is available
-    if (!process.env.JWT_SECRET_KEY) {
-      console.error(
-        "JWT_SECRET_KEY is missing or undefined in the environment variables"
-      );
-      return res
-        .status(500)
-        .json({ status: "failed", message: "Internal Server Error" });
-    }
-
-    // Verify the reset token
-    const verifiedToken = jwt.verify(decodedToken, process.env.JWT_SECRET_KEY);
-    const userID = verifiedToken.userID;
-
-    // Find the user by ID
-    const user = await User.findById(userID);
-
-    // Check if the user exists
-    if (!user) {
-      return res
-        .status(404)
-        .json({ status: "failed", message: "User not found" });
-    }
-
-    // Create the reset password form
-    const resetPasswordForm = `
-    <html>
-  <body>
-    <h1>Reset Password</h1>
-    <form id="resetPasswordForm" action="http://localhost:8000/api/auth/reset-password/${token}" method="POST">
-      <label for="newPassword">New Password:</label>
-      <input type="password" id="newPassword" name="newPassword" required>
-      <button type="submit">Reset Password</button>
-    </form>
-    <p>If you did not request a password reset, please ignore this email.</p>
-
-    <script>
-  document.getElementById("resetPasswordForm").addEventListener("submit", function(event) {
-    event.preventDefault(); // Prevent default form submission
-
-    // Extract the new password from the form input field
-    const newPassword = document.getElementById("newPassword").value;
-
-    // Make an AJAX POST request to the API endpoint
-    fetch(this.action, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ newPassword }) // Include the newPassword field in the request body
-    })
-    .then(response => {
-      console.log("Raw response:", response.clone().text()); // Log the raw response text
-      return response.json(); // Parse the JSON response
-    })
-    .then(data => {
-      console.log("Data:", data); // Log the parsed data
-      // Handle the response from the server
-      if (data.status === "success") {
-        alert(data.message); // Display a success message
-      } else {
-        throw new Error(data.message); // Throw an error for unsuccessful response
-      }
-    })
-    .catch(error => {
-      console.error("Error:", error); // Log any errors
-      // Display an error message
-      alert(error.message || "An error occurred. Please try again.");
-    });
-  });
-</script>
-
-
-  </body>
-</html>
-
-  
-    `;
-
-    // Send the reset password form as the response
-    res.send(resetPasswordForm);
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ status: "failed", message: "Unable to reset password" });
-  }
-};
-
 exports.resetPasswordPost = async (req, res) => {
   try {
     const { token } = req.params;
@@ -369,16 +273,6 @@ exports.resetPasswordPost = async (req, res) => {
 
     // Decode the token using URL-safe decoding
     const decodedToken = decodeURIComponent(token);
-
-    // Check if JWT_SECRET_KEY is available
-    if (!process.env.JWT_SECRET_KEY) {
-      console.error(
-        "JWT_SECRET_KEY is missing or undefined in the environment variables"
-      );
-      return res
-        .status(500)
-        .json({ status: "failed", message: "Internal Server Error" });
-    }
 
     // Verify the reset token
     const verifiedToken = jwt.verify(decodedToken, process.env.JWT_SECRET_KEY);
@@ -402,10 +296,175 @@ exports.resetPasswordPost = async (req, res) => {
     user.password = hashNewPassword;
     await user.save();
 
-    // Redirect the user to the login page or display a success message
-    res.send(
-      "Password reset successful. You can now login with your new password."
-    );
+    // Return a success message
+    res
+      .status(200)
+      .json({ status: "success", message: "Password reset successful" });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ status: "failed", message: "Unable to reset password" });
+  }
+};
+
+exports.resetPasswordGet = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    // Decode the token using URL-safe decoding
+    const decodedToken = decodeURIComponent(token);
+
+    // Verify the reset token
+    const verifiedToken = jwt.verify(decodedToken, process.env.JWT_SECRET_KEY);
+    const userID = verifiedToken.userID;
+
+    // Find the user by ID
+    const user = await User.findById(userID);
+
+    // Check if the user exists
+    if (!user) {
+      return res
+        .status(404)
+        .json({ status: "failed", message: "User not found" });
+    }
+
+    // Return the reset password form
+
+    const resetPasswordForm = `
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reset Password</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  .container {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  label {
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  input {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 300px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #0056b3;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Reset Password</h1>
+  <form id="resetPasswordForm" action="http://localhost:8000/api/auth/reset-password/${token}" method="POST">
+    <label for="newPassword">New Password:</label>
+    <input type="password" id="newPassword" name="newPassword" required>
+    <label for="confirmPassword">Confirm Password:</label>
+    <input type="password" id="confirmPassword" name="confirmPassword" required>
+    <button type="submit">Reset Password</button>
+  </form>
+  <p>If you did not request a password reset, please ignore this email.</p>
+</div>
+
+<script>
+document.getElementById("resetPasswordForm").addEventListener("submit", function(event) {
+  event.preventDefault(); // Prevent default form submission
+
+  // Extract the new password and confirm password from the form input fields
+  const newPassword = document.getElementById("newPassword").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+
+  // Check if passwords match
+  if (newPassword !== confirmPassword) {
+    alert("Passwords do not match. Please try again.");
+    return;
+  }
+
+  // Make an AJAX POST request to the API endpoint
+  fetch(this.action, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ newPassword }) // Include the newPassword field in the request body
+  })
+  .then(response => {
+    console.log("Raw response:", response.clone().text()); // Log the raw response text
+    return response.json(); // Parse the JSON response
+  })
+  .then(data => {
+    console.log("Data:", data); // Log the parsed data
+    // Handle the response from the server
+    if (data.status === "success") {
+      alert(data.message); // Display a success message
+    } else {
+      throw new Error(data.message); // Throw an error for unsuccessful response
+    }
+  })
+  .catch(error => {
+    console.error("Error:", error); // Log any errors
+    if (error.response && error.response.status === 401) {
+        alert("Incorrect current password. Please try again.");
+    } else {
+        alert("An error occurred. Please try again later.");
+    }
+});
+
+});
+</script>
+
+</body>
+</html>
+
+    `;
+
+    // Send the reset password form as the response
+    res.send(resetPasswordForm);
   } catch (error) {
     console.error(error);
     res
