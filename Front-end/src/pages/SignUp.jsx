@@ -21,19 +21,24 @@ import { postData } from "../components/Api";
 import Loader2 from "../components/Loader2";
 import { toast } from "react-toastify";
 import { Modal } from "react-bootstrap";
+import axios from "axios";
 
 const Login = () => {
   const { token, login, swap, setSwap } = useAuth();
 
   const [showModal, setShowModal] = useState(false);
-
+  const [forgetEmail, setForgetEmail] = useState("");
   const toggleModal = () => {
+    setErrors({});
+    setForgetEmail("");
+    setSuccess(false);
     setShowModal(!showModal);
   };
   console.log("===>signup", token);
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loading1, setLoading1] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -157,6 +162,37 @@ const Login = () => {
   useEffect(() => {
     // login(!!token);
   }, [token, login]);
+
+  const [success, setSuccess] = useState(false);
+  //handlesubmit for forgetpassword
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrors({});
+    setLoading1(true);
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/auth/forgot-password",
+        {
+          email: forgetEmail, // Use forgetEmail instead of formData.email
+        }
+      );
+
+      // Handle successful response
+      setLoading1(false);
+      setSuccess(true);
+      console.log(response.data);
+    } catch (error) {
+      setLoading1(false);
+      setErrors({
+        message:
+          error.response.data.message === "User not found"
+            ? "User not found. Please check your email and try again."
+            : error.response.data.message,
+      });
+
+      console.error("Error:", error);
+    }
+  };
 
   return (
     <div className="login-wrapper">
@@ -377,14 +413,32 @@ const Login = () => {
             id="emailp"
             placeholder="m@example.com"
             required
+            value={forgetEmail}
+            onChange={(e) => setForgetEmail(e.target.value)}
             className="form-control mt-2 custom-input"
             style={{ width: "90%", marginLeft: "5%" }}
           />
         </div>
         <div className="text-center">
-          <button className="btn btn-dark mt-4 " style={{ width: "90%" }}>
-            Submit
+          <button
+            className="btn btn-dark mt-4 "
+            style={{ width: "90%" }}
+            onClick={handleSubmit}
+          >
+            {loading1 ? 'Sending...' : 'Send Reset Email'}
           </button>
+          {Object.keys(errors).length > 0 && (
+            <div className="alert alert-danger mt-2">
+              {Object.values(errors).map((error, index) => (
+                <p key={index}>{error}</p>
+              ))}
+            </div>
+          )}
+          {success && (
+            <div className="alert alert-success mt-2">
+              Reset email sent successfully!
+            </div>
+          )}
         </div>
         <div className="mt-5 mb-3 ms-4">
           <Link to="/signup" onClick={toggleModal}>

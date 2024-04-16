@@ -441,7 +441,11 @@ document.getElementById("resetPasswordForm").addEventListener("submit", function
     console.log("Data:", data); // Log the parsed data
     // Handle the response from the server
     if (data.status === "success") {
-      alert(data.message); // Display a success message
+      setTimeout(function() {
+        // Redirect to signup page after 3 seconds
+        window.location.href = "http://localhost:3000/SignUp";
+      }, 3000);
+      alert(data.message + ". Click OK to return to the login page.");
     } else {
       throw new Error(data.message); // Throw an error for unsuccessful response
     }
