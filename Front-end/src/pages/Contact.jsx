@@ -17,9 +17,10 @@ const Contact = () => {
     phone: "",
     message: "",
   });
+  const [loading, setLoading] = useState(false);
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    console.log("Form data:", formData);
+    // console.log("Form data:", formData);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,11 +47,17 @@ const Contact = () => {
       return;
     }
     try {
-      await axios.post("https://ecommerce-backend-1-qzcn.onrender.com/api/contact", formData);
+      setLoading(true);
+      await axios.post(
+        "https://ecommerce-backend-1-qzcn.onrender.com/api/contact",
+        formData
+      );
       toast.success("Form submitted successfully");
       setFormData({ name: "", email: "", phone: "", message: "" });
     } catch (error) {
       toast.error("An error occurred. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -143,9 +150,10 @@ const Contact = () => {
               </form>
               <div className="d-flex justify-content-end mt-4 mb-5">
                 <Button
-                  label={"Send Massage"}
+                  label={loading ? "Sending..." : "Send Message"}
                   onClick={handleSubmit}
                   className="contact-button"
+                  disabled={loading}
                 />
               </div>
             </div>

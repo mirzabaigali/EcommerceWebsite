@@ -171,7 +171,8 @@ const Login = () => {
     setLoading1(true);
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/auth/forgot-password",
+        // "http://localhost:8000/api/auth/forgot-password",
+        "https://ecommerce-backend-1-qzcn.onrender.com/api/auth/forgot-password",
         {
           email: forgetEmail, // Use forgetEmail instead of formData.email
         }
