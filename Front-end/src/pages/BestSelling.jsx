@@ -67,7 +67,7 @@ const BestSelling = () => {
         </div>
       </div>
       <div className="container">
-        <div className="row">
+        <div className="row d-flex justify-content-center">
           {Bestselling.map((item, ind) => {
             const {
               originalPrice,

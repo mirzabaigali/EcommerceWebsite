@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import "./Ham.css";
 import searchIcon from "../assets/Search.svg";
+import { Link } from "react-router-dom";
 // import { AuthContext } from "../Context/AppContext";
 
 const Ham = () => {
@@ -12,7 +13,9 @@ const Ham = () => {
         <div className="col-12">
           <div className="ham-wrapper">
             <ul className="list">
-              <li>Home</li>
+              <li>
+                <Link to="/"> Home</Link>
+              </li>
               <li>Contact</li>
               <li>About</li>
               {/* <li onClick={() => setLoginOnly(false)}>SignUp</li> */}

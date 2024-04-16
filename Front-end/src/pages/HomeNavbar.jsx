@@ -24,6 +24,8 @@ const HomeNavbar = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [error, setError] = useState(null);
   const [cartItemCount, setCartItemCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [category, setCategory] = useState([]);
   const cartItems = useSelector((state) => state.cart);
   const { token, swap, setSwap } = useAuth();
   const storedToken = localStorage.getItem("authToken");
@@ -79,6 +81,25 @@ const HomeNavbar = () => {
   // useEffect(() => {
   //   console.log("Token:", token);
   // }, [token]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "https://dummyjson.com/products/categories"
+        );
+        setCategory(response?.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  const handleCategoryClick = (category) => {
+    // setSelectedCategory(category);
+    navigate(`/selectedcategory`, { state: category });
+  };
   return (
     <>
       <Sale />
@@ -115,27 +136,55 @@ const HomeNavbar = () => {
                       aria-label="Close"
                     ></button>
                   </div>
-                  <ul className="main-list">
-                    <li>
-                      Woman’s Fashion
-                      <span className="main-dropdown">
-                        <img src={DropDown} alt="" />
-                      </span>
-                    </li>
-                    <li>
-                      Men’s Fashion
-                      <span className="main-dropdown1">
-                        <img src={DropDown} alt="" />
-                      </span>
-                    </li>
-                    <li>Electronics</li>
-                    <li>Home & Lifestyle</li>
-                    <li>Medicine</li>
-                    <li>Sports & Outdoor</li>
-                    <li>Baby’s & Toys</li>
-                    <li>Groceries & Pets</li>
-                    <li>Health & Beauty</li>
-                  </ul>
+                  <div className="container">
+                    <div className="row">
+                      <div className="col-sm-5 ">
+                        <ul className="main-list">
+                          {loading ? (
+                            <div className="d-flex justify-content-center align-items-center">
+                              <div class="spinner"></div>
+                            </div>
+                          ) : (
+                            category.slice(0, 10).map((item, index) => (
+                              <li
+                                key={item.id || index}
+                                // className={
+                                //   hoveredCategory === item.id ? "zoom-in" : ""
+                                // }
+                                // onMouseEnter={() => setHoveredCategory(item.id)}
+                                // onMouseLeave={() => setHoveredCategory(null)}
+                                onClick={() => handleCategoryClick(item)}
+                              >
+                                {item}
+                              </li>
+                            ))
+                          )}
+                        </ul>
+                      </div>
+                      <div className="col-sm-5 ">
+                        <ul className="main-list">
+                          {loading ? (
+                            // <div class="spinner"></div>
+                            <></>
+                          ) : (
+                            category.slice(10, 20).map((item, index) => (
+                              <li
+                                key={item.id || index}
+                                // className={
+                                //   hoveredCategory === item.id ? "zoom-in" : ""
+                                // }
+                                // onMouseEnter={() => setHoveredCategory(item.id)}
+                                // onMouseLeave={() => setHoveredCategory(null)}
+                                onClick={() => handleCategoryClick(item)}
+                              >
+                                {item}
+                              </li>
+                            ))
+                          )}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </span>
             </div>

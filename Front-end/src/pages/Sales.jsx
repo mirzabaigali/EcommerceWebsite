@@ -70,7 +70,7 @@ const Sales = () => {
   };
   const calculateRemainingTime = () => {
     const currentTime = new Date();
-    const endTime = new Date("2024-04-12T03:23:55Z");
+    const endTime = new Date("2024-04-30T03:23:55Z");
     const timeDifference = endTime - currentTime;
 
     const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
@@ -111,125 +111,131 @@ const Sales = () => {
   }, [response]);
   return (
     <>
-      <div className="row sales-wrapper">
-        <div className="test d-flex justify-content-between">
-          <div className="test1">
-            <div className="col-md-12 mx-3 sale-first">
-              <div>
-                <img src={line} alt="" className="small-line" />
-              </div>
-              <div>
-                <p className="sale-text">Today's</p>
-              </div>
-            </div>
-            <div className="time-wrapper d-md-flex d-sm-block gap-5 align-items-end mx-3">
-              <div className="time">
-                <span className="span-text">Flash Sales</span>
-              </div>
-              <div className="time">
-                <div className="time-block d-flex border">
-                  <span className="time-heading">Days</span>
-                  <span className="time-heading">Hours</span>
-                  <span className="time-heading">Minutes</span>
-                  <span className="time-heading">Seconds</span>
+      <div className="container">
+        <div className="row d-flex justify-content-center">
+          <div className="row sales-wrapper">
+            <div className="test d-flex justify-content-between">
+              <div className="test1">
+                <div className="col-md-12 mx-3 sale-first">
+                  <div>
+                    <img src={line} alt="" className="small-line" />
+                  </div>
+                  <div>
+                    <p className="sale-text">Today's</p>
+                  </div>
                 </div>
-                <div className="time-block1 d-flex gap-3">
-                  {/* <span className="number">03</span>
+                <div className="time-wrapper d-md-flex d-sm-block gap-5 align-items-end mx-3">
+                  <div className="time">
+                    <span className="span-text">Flash Sales</span>
+                  </div>
+                  <div className="time">
+                    <div className="time-block d-flex border">
+                      <span className="time-heading">Days</span>
+                      <span className="time-heading">Hours</span>
+                      <span className="time-heading">Minutes</span>
+                      <span className="time-heading">Seconds</span>
+                    </div>
+                    <div className="time-block1 d-flex gap-3">
+                      {/* <span className="number">03</span>
                   <span className="divider">:</span>
                   <span className="number">23</span>
                   <span className="divider">:</span>
                   <span className="number">55</span>
                   <span className="divider">:</span>
                   <span className="number">06</span> */}
-                  <span className="number">
-                    {remainingTime && remainingTime.days}
-                  </span>
-                  <span className="divider">:</span>
-                  <span className="number">
-                    {remainingTime && remainingTime.hours}
-                  </span>
-                  <span className="divider">:</span>
-                  <span className="number">
-                    {remainingTime && remainingTime.minutes}
-                  </span>
-                  <span className="divider">:</span>
-                  <span className="number">
-                    {remainingTime && remainingTime.seconds}
-                  </span>
+                      <span className="number">
+                        {remainingTime && remainingTime.days}
+                      </span>
+                      <span className="divider">:</span>
+                      <span className="number">
+                        {remainingTime && remainingTime.hours}
+                      </span>
+                      <span className="divider">:</span>
+                      <span className="number">
+                        {remainingTime && remainingTime.minutes}
+                      </span>
+                      <span className="divider">:</span>
+                      <span className="number">
+                        {remainingTime && remainingTime.seconds}
+                      </span>
+                    </div>
+                  </div>
                 </div>
+              </div>
+              <div className="d-flex pt-3 align-items-end">
+                <img src={ellipse} alt="" />
+                <img
+                  src={left}
+                  alt="left"
+                  className="leftarrow"
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1}
+                />
+                <img src={ellipse} alt="" />
+                <img
+                  src={right}
+                  alt="right"
+                  className="rightarrow"
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                />
               </div>
             </div>
-          </div>
-          <div className="d-flex pt-3 align-items-end">
-            <img src={ellipse} alt="" />
-            <img
-              src={left}
-              alt="left"
-              className="leftarrow"
-              onClick={handlePrevPage}
-              disabled={currentPage === 1}
-            />
-            <img src={ellipse} alt="" />
-            <img
-              src={right}
-              alt="right"
-              className="rightarrow"
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-            />
-          </div>
-        </div>
-        <div className="row mt-5">
-          {loading && <Loader />}
-          {error && <div className="error-message">{error}</div>}
-          {visibleItems.map((item) => {
-            const { id, title, image, price } = item;
-            const originalPrice = price;
+            <div className="row mt-5">
+              {loading && <Loader />}
+              {error && <div className="error-message">{error}</div>}
+              {visibleItems.map((item) => {
+                const { id, title, image, price } = item;
+                const originalPrice = price;
 
-            const salePrice = salePrices[id] || originalPrice;
+                const salePrice = salePrices[id] || originalPrice;
 
-            return (
-              <div
-                className="col-lg-3 col-md-3 col-sm-6 col-12  border img-block"
-                key={id}
-                onClick={() => navigateToSingleProduct(item)}
-              >
-                <div>
-                  <div className="text-center mt-2">
-                    <img
-                      src={image}
-                      alt={title}
-                      className="img-fluid sale-imgs mb-2 "
-                    />
+                return (
+                  <div
+                    className="col-lg-3 col-md-3 col-sm-6 col-12  border img-block"
+                    key={id}
+                    onClick={() => navigateToSingleProduct(item)}
+                  >
+                    <div>
+                      <div className="text-center mt-2">
+                        <img
+                          src={image}
+                          alt={title}
+                          className="img-fluid sale-imgs mb-2 "
+                        />
+                      </div>
+                      <div className="mt-2">
+                        <p>{title.substring(0, 20)}</p>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <p className="text-danger text-decoration-line-through ">
+                          ${originalPrice.toFixed(2)}
+                        </p>
+                        <p className="text-primary">
+                          ${(price * 0.9).toFixed(2)}
+                        </p>
+                      </div>
+                      <div className="mt-2 mb-2">
+                        <button className="btn btn-outline-info">
+                          Add To Cart
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <div className="mt-2">
-                    <p>{title.substring(0, 20)}</p>
-                  </div>
-                  <div className="d-flex justify-content-between">
-                    <p className="text-danger text-decoration-line-through ">
-                      ${originalPrice.toFixed(2)}
-                    </p>
-                    <p className="text-primary">${(price * 0.9).toFixed(2)}</p>
-                  </div>
-                  <div className="mt-2 mb-2">
-                    <button className="btn btn-outline-info">
-                      Add To Cart
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+                );
+              })}
+            </div>
+          </div>
+          <div className="mt-5 mb-5 d-flex justify-content-center">
+            <Button
+              label={"View All Products"}
+              className="custom-button"
+              onClick={handleClick}
+            />
+          </div>
+          <div className="horizontal-line"></div>
         </div>
       </div>
-      <div className="mt-5 mb-5 d-flex justify-content-center">
-        <Button
-          label={"View All Products"}
-          className="custom-button"
-          onClick={handleClick}
-        />
-      </div>
-      <div className="horizontal-line"></div>
     </>
   );
 };

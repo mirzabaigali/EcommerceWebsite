@@ -181,6 +181,17 @@
 .img-block{
   cursor: pointer !important;
 }
-@media screen {
-  
+
+/* media queries */
+
+@media only screen and (max-width: 767px) {
+  .number {
+    font-size: 25px;
+  }
+  .divider{
+    font-size: small;
+  }
+  .time-block{
+    gap: 10px;
+  }
 }
